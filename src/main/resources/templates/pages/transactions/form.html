@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(${pageTitle})"></head>
+
+<body>
+	<section>
+		<aside th:replace="fragments/common :: app-sidebar"></aside>
+		<main>
+			<div class="main-content">
+				<div th:replace="fragments/common :: app-header(${transactionAccount},'')"></div>
+				<div class="new-transaction">		
+					<div class="new-transaction__details">			
+						<div class="new-transaction__details--left">			
+							<select class="new-transaction__account-dropdown form-control" id="transaction-accounts">
+				                <option selected value="">Select account...</option>     
+				                <option th:each="account: ${accounts}" th:value="${account.accountNumber}" th:data-balance="${account.accountBalance}" th:data-name="${account.accountName}" th:text="${account.accountName}"></option>   
+				    		</select>
+    						<div class="new-transaction__account-balance">
+    							<div class="account-balance__title">Available Balance</div>
+    							<div class="account-balance__value ghana-cedi-symbol" id="account_balance">0.00</div>
+    						</div>
+						</div>
+						<div class="new-transaction__details--right">			
+							<select class="new-transaction__account-dropdown form-control" id="transaction-types">
+				                <option selected value="">Select a transaction type...</option>  
+				                <option value="loan">Loan</option> 
+				                <option value="deposit">Deposit</option>   
+				                <option value="withdrawal">Withdrawal</option>   
+				    		</select>
+							<input class="new-transaction__amount form-control" id="transaction-amount" placeholder="0.00">
+						</div>
+					</div>
+					<div class="new-transaction__summary neo__outset">
+						<h4 class="new-transaction__summary-title">Transaction Summary</h4>
+						<div class="new-transaction__summary-body">
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Account Name</span>
+						        <span class="summary__value" id="summary-account-name">N/A</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Account Number</span>
+						        <span class="summary__value" id="summary-account-number">N/A</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Branch</span>
+						        <span class="summary__value" id="summary-transaction-branch" th:data-branch="${employee.branch.branchId}" th:text="${employee.branch.branchName}">N/A</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Issued By</span>
+						        <span class="summary__value" id="summary-transaction-issuer" th:data-issuer="${employee.employeeId}" th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}">N/A</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Transaction Type</span>
+						        <span class="summary__value" id="summary-transaction-type">N/A</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details">
+						        <span class="summary__title">Amount</span>
+						        <span class="summary__value ghana-cedi-symbol" id="summary-transaction-amount">0.00</span>
+						    </fieldset>
+						    <fieldset class="new-transaction__summary-details confirmation-field">
+						        <div class="custom__checkbox-container">
+                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Transaction">
+                                </div>
+						    </fieldset>
+						</div>
+					</div>
+					<div class="new-resource__buttons">
+						<a class="btn custom-button custom-button--return neo__outset" href="javascript:history.go(-1)"><i class="fas fa-arrow-circle-left mr-2"></i>Return</a>
+						<button class="btn custom-button custom-button--cancel neo__outset" th:unless="${employeeId}" onclick="cancelTransaction()">Cancel</button>
+						<button class="btn custom-button custom-button--save neo__outset" th:unless="${employeeId}" onclick="saveTransaction()">Make Transaction</button>
+					</div>
+				</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+			</div>
+		</main>
+	</section>
+	<div th:replace="fragments/common :: required-scripts"></div>
+	<script type="text/javascript" th:inline="javascript">
+
+		$('#transaction-accounts').multiselect({
+	       	enableFiltering: true,
+	       	enableCaseInsensitiveFiltering: true,
+	       	onChange: function(element, checked) {
+	       		const transactionAccountNumber = this.$select.val();
+	       		const transactionAccountName = element[0].attributes.getNamedItem('data-name').value;
+	       		const transactionAccountBalance = element[0].attributes.getNamedItem('data-balance').value; 
+	       		$('#summary-account-name').text(transactionAccountName);
+	       		$('#summary-account-number').text(transactionAccountNumber);
+	       		$('#account_balance').text(transactionAccountBalance);
+	        }
+	    });
+		
+		$('#transaction-types').multiselect({
+	       	enableFiltering: true,
+	       	enableCaseInsensitiveFiltering: true,
+	       	onChange: function(element, checked) {
+	       		const transactionType = this.$select.val() == "" ? "N/A" : this.$select.val().toUpperCase();
+	       		$('#summary-transaction-type').text(transactionType);
+	        }
+	    });
+		
+		const saveTransaction = () => {
+			if(validateForm()) {
+				const transactionAccountName = $('#summary-account-name').text().toUpperCase();
+				const transactionAccountNumber = $('#summary-account-number').text().toUpperCase();
+				const transactionType = $('#summary-transaction-type').text();
+				const transactionAmount = $('#summary-transaction-amount').text();
+				const transactionBranchId = $('#summary-transaction-branch').attr('data-branch');
+				const transactionIssuerId = $('#summary-transaction-issuer').attr('data-issuer');
+				
+				const transaction = {
+					"transactionAccountName": transactionAccountName,
+					"transactionAccountNumber": transactionAccountNumber,
+					"transactionType": transactionType,
+					"transactionAmount": transactionAmount,
+					"transactionBranch": transactionBranchId,
+					"transactionIssuedBy": transactionIssuerId
+				};
+		
+				$.ajax({
+					url: `${CONTEXT}api/v1/transactions`,
+					method: `POST`,
+					contentType: `application/json`,
+					data: JSON.stringify(transaction),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: (response)=> {
+						swal({
+							type: 'success',
+							title: 'Processed!',
+							text: 'Transaction was successful',
+							showConfirmButton: true,
+							showCancelButton: false,
+							confirmButtonText: 'Done'
+						});
+				
+						$('#account_balance').text(response.accountBalance);
+						$('#transaction-amount').val('');
+						$('#confirm-action').prop('checked', false);
+						$('#summary-transaction-type').text('N/A');
+						$('#summary-transaction-amount').text('0.00');
+						$('#transaction-types').val([]).multiselect('refresh');
+						$('.multiselect-search').val('').trigger("change");
+						$('.multiselect-container').find('li').css('display', 'block');
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;	
+			
+			if($('#summary-transaction-amount').text() === "" || $('#summary-transaction-amount').text() === "0.00"){
+				msg = "Enter an amount";
+				isValidated = false;
+			}		
+			
+			if ($('#summary-transaction-type').text() === "" || $('#summary-transaction-type').text() === "N/A") {
+				msg = "Select a transaction type";
+				isValidated = false;
+			}
+			
+			if($('#summary-account-name').text() === "" || $('#summary-account-name').text() === "N/A") {
+				msg = "Select an account";
+				isValidated = false;
+			}
+			
+			if($('#summary-account-number').text() === "" || $('#summary-account-number').text() === "N/A") {
+				msg = "Select an account";
+				isValidated = false;
+			}
+			
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+					msg = "Confirm transaction";
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 2000
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+		
+		const cancelTransaction = () => {
+			$('#summary-account-name').text('N/A');
+			$('#summary-account-number').text('N/A');
+			$('#summary-transaction-type').text('N/A');
+			$('#summary-transaction-amount').text('0.00');
+			$('#account_balance').text('0.00');
+			$('#transaction-amount').val('');
+			$('#confirm-action').prop('checked', false);
+			
+			$('#transaction-types').val([]).multiselect('refresh');
+			$('#transaction-accounts').val([]).multiselect('refresh');
+			$('.multiselect-search').val('').trigger("change");
+			$('.multiselect-container').find('li').css('display', 'block');
+		};
+		
+		$('#transaction-amount').on('input', function (event) {
+	        this.value = this.value.replace(/[^0-9.]/g, '');
+	    });
+		
+		/** Get value entered from input and set them on Transaction Summary card */
+		$("#transaction-amount").on("keyup", function() {
+		    const transactionAmount = $(this).val();
+		    $('#summary-transaction-amount').text(transactionAmount);
+		});
+		
+		//TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(document).on('keydown', (event)=> {
+		    if(event.keyCode === 13){	    	
+		        event.preventDefault(); // Ensure it is only this code that runs
+		        saveTransaction();
+		    }
+		});
+	</script>
+</body>
+</html>

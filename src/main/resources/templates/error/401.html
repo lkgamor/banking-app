@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: error-head(Forbidden)"></head>
+<body>
+	<section class="error">
+		<div class="error__card">
+			<div class="error__card--top">
+				<img class="company-logo" alt="Saveright Logo" th:src="@{/images/logo.png}">
+				<h2 class="error__title">Access Denied</h2> 
+			</div>
+			<div class="error__card--bottom">
+				<span class="error__message">You are unauthorized to view this page</span>
+				<a type="button" class="btn error__button" th:href="@{/dashboard}">Go To Dashboard</a>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

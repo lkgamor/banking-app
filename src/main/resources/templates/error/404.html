@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: error-head('Not Found')"></head>
+<body>
+	<section class="error">
+		<div class="error__card">
+			<div class="error__card--top">
+				<img class="company-logo" alt="Saveright Logo" th:src="@{/images/logo.png}">
+				<h2 class="error__title">Page Not Found</h2> 
+			</div>
+			<div class="error__card--bottom">
+				<span class="error__message">The page you're requesting does not exist or cannot be found</span>
+				<a type="button" class="btn error__button" onclick="window.history.back();">Go Back</a>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

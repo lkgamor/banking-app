@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(Employees)"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header(EMPLOYEES, ${pageCount})"></div>
+               <div class="application__header application__employee-header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find an employee...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>		
+               		<div th:replace="fragments/common :: tables-filter(false)"></div>			
+					<a class="neo__outset btn resource__add" th:href="@{/employees/add}"><i class="fas fa-plus"></i> New Employee</a>
+               </div>
+               <div class="application__body">
+               		<table class="application__table table table-striped table-sm text-center">
+						<thead class="application__table--head text-left">
+							<tr>
+								<th class="t-head">Staff Name</th>
+								<th class="t-head">Contact</th>
+								<th class="t-head">Date of Birth</th>
+								<th class="t-head">Gender</th>
+								<th class="t-head">Address</th>
+								<th class="t-head">Branch</th>									
+								<th class="t-head">Role</th>
+								<th class="t-head">Working Status</th>
+							</tr>
+						</thead>
+						<tbody class="application__table--body text-left">
+							<tr class="employee__record" th:each="employee : ${employees}" th:id="employee_ + ${employee.content.employeeId}">
+								<td	class="employeeName">
+									<a th:href="@{|/employees/${employee.content.employeeId}|}" th:title="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}" th:text="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}"></a>
+								</td>
+								<td	class="employee__contact" th:title="${#strings.capitalize(employee.content.employeeContact)}">
+									<div class="d-flex">
+										<span  th:text="${#strings.capitalize(employee.content.employeeContact)}"></span>
+										<i class="fas fa-phone ml-1"></i>
+									</div>
+								</td>
+								<td	class="employee__dob" th:text="${#strings.capitalize(employee.content.employeeDOB)}" th:title="${#strings.capitalize(employee.content.employeeDOB)}"></td>
+								<td	class="employee__gender" th:text="${#strings.capitalize(employee.content.employeeGender)}" th:title="${#strings.capitalize(employee.content.employeeGender)}"></td>
+								<td	class="employee__address" th:text="${#strings.capitalize(employee.content.employeeAddress)}" th:title="${#strings.capitalize(employee.content.employeeAddress)}"></td>
+								<td	class="employee__branch" th:text="${#strings.capitalize(employee.content.branch.branchName)}" th:title="${#strings.capitalize(employee.content.branch.branchName)}"></td>
+								<td	class="employee__role">
+									<div class="d-flex" th:if="${#strings.toUpperCase(employee.content.role.roleName).contains('MANAGER')}">
+										<span th:text="${employee.content.role.roleName}"></span>
+										<i class="fas fa-user-tie ml-3" data-toggle="tooltip" th:title="'Manager of ' + ${#strings.capitalize(employee.content.branch.branchName)}"></i>
+									</div>
+									<span th:unless="${#strings.toUpperCase(employee.content.role.roleName).contains('MANAGER')}" th:text="${employee.content.role.roleName}"></span>
+								</td>
+								<td	class="resource__status">
+									<span class="resource__status--state active" th:if="${employee.content.employeeWorkingStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+										<span>Active</span>
+									</span>
+									<span class="resource__status--state terminated" th:unless="${employee.content.employeeWorkingStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Terminated"></i></span>
+										<span>Terminated</span>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="void" th:unless="${employees.metadata.totalElements}">
+						<span class="void__text">NO EMPLOYEES CREATED</span>
+						<img class="void__image" alt="No Employees" th:src="@{/images/employees.svg}">
+					</div>
+					
+					<nav class="pagination-nav" aria-label="" th:if="${employees.metadata.totalElements}">
+						<ul class="pagination">
+					        <li th:class="${employees.metadata.number == 0} ? 'disabled' : ''">
+					            <a th:if="${employees.metadata.number == 0}" href="javascript:void(0);">Previous</a>
+					            <a th:unless="${employees.metadata.number == 0}" th:href="@{${'/employees'}(page=${employees.metadata.number-1},size=${employees.metadata.size})}">Previous</a>
+					        </li> 					
+					        <li th:if="${employees.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, 2)}" th:class="${employees.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${employees.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${employees.metadata.number == pageNo}" th:href="@{${'/employees'}(page=${pageNo},size=${employees.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:unless="${employees.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, employees.metadata.totalPages - 1)}" th:class="${employees.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${employees.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${employees.metadata.number == pageNo}" th:href="@{${'/employees'}(page=${pageNo},size=${employees.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:class="${employees.metadata.number + 1} == ${employees.metadata.totalPages} ? 'disabled' : ''">
+					           <a th:if="${employees.metadata.number + 1} == ${employees.metadata.totalPages}" href="javascript:void(0);">Next</a>
+					           <a th:unless="${employees.metadata.number + 1} == ${employees.metadata.totalPages}" th:href="@{${'/employees'}(page=${employees.metadata.number+1},size=${employees.metadata.size})}">Next</a>
+					        </li>
+					    </ul>
+					</nav>
+               	</div>   
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div>                
+           </div>                   
+       </main>       
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+   <script type="module" th:src="@{js/custom/employees.js}"></script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('Employee - ' + ${pageTitle})"></head>
+
+<body>
+	<section>
+		<aside th:replace="fragments/common :: app-sidebar"></aside>
+		<main>
+			<div class="main-content">
+				<div th:replace="fragments/common :: app-header(${employeeName},'')"></div>
+				<div class="new-resource">
+					<a class="btn custom-button custom-button--return neo__outset" href="javascript:history.go(-1)"><i class="fas fa-arrow-circle-left mr-2"></i>Return</a>
+					<div class="new-resource__illustration" th:if="${employeeId}">
+						<span class="new-resource__text">Employees are golden, treat them well...</span>
+						<img class="new-resource__image" alt="New Employee" th:src="@{/images/employee-old.svg}">
+					</div>
+					<div class="new-resource__illustration" th:unless="${employeeId}">
+						<span class="new-resource__text">It's good to have a new member join the team...</span>
+						<img class="new-resource__image" alt="New Employee" th:src="@{/images/employee-new.svg}">
+					</div>
+					<div class="new-resource__details" th:object="${employee}">	
+						<input hidden="hidden" th:field="*{employeeId}">	
+						<div class="new-resource__details-column new-resource__details--1">
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">First Name <i class="fas fa-user fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:field="*{employeeFirstName}" id="employee-first-name" name="form-control" type="text" placeholder="eg. John" disabled>
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeFirstName}" id="employee-first-name" name="form-control" type="text" placeholder="eg. John" required>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Last Name <i class="fas fa-user fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{employeeLastName}" id="employee-last-name" name="form-control" type="text" placeholder="eg. Doe" required>
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeLastName}" id="employee-last-name" name="form-control" type="text" placeholder="eg. Doe" required>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Phone Number <i class="fas fa-phone fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{employeeContact}" id="employee-contact" name="form-control" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]{10}" required>
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeContact}" id="employee-contact" name="form-control" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]{10}" required>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Date of Birth <i class="fas fa-calendar fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:field="*{employeeDOB}" id="employee-dob" name="form-control" type="date" disabled>
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeDOB}" id="employee-dob" name="form-control" type="date" required>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Email <i class="fas fa-envelope fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{employeeEmail}" id="employee-email" name="form-control" type="email" placeholder="eg. johndoe01@hotmail.com">
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeEmail}" id="employee-email" name="form-control" type="email" placeholder="eg. johndoe01@hotmail.com">
+							</div>	
+						</div>
+						
+						<div class="new-resource__details-column new-resource__details--2">	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Address <i class="fas fa-map-marked fa-sm"></i></span> 
+								<input class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{employeeAddress}" id="employee-address" name="form-control" type="text" placeholder="eg. Accra" required>
+								<input class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeAddress}" id="employee-address" name="form-control" type="text" placeholder="eg. Accra" required>
+							</div>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Gender <i class="fas fa-venus-mars fa-sm"></i></span> 
+								<select class="custom-input form-control" th:if="${employee.employeeId}" th:field="*{employeeGender}" id="employee-gender" disabled>
+									<option selected value="">Select gender</option>
+									<option th:each="type : ${genderTypes}" th:value="${type}" th:text="${type}"></option>
+								</select>
+								<select class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{employeeGender}" id="employee-gender">
+									<option selected value="">Select gender</option>
+									<option th:each="type : ${genderTypes}" th:value="${type}" th:text="${type}"></option>
+								</select>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Branch <i class="fas fa-building fa-sm"></i></span> 
+								<select class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{branch.branchId}" id="employee-branch">
+									<option selected value="">Choose branch</option>
+									<option th:each="branch: ${branches}" th:value="${branch.branchId}" th:text="${branch.branchName}"></option>
+								</select>
+								<select class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{branch.branchId}" id="employee-branch">
+									<option selected value="">Choose branch</option>
+									<option th:each="branch: ${branches}" th:value="${branch.branchId}" th:text="${branch.branchName}"></option>
+								</select>
+							</div>	
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title">Role <i class="fas fa-user-secret fa-sm"></i></span>
+								<select class="custom-input form-control" th:if="${employee.employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" th:field="*{role.roleId}" id="employee-role">
+									<option selected value="">Assign role</option>
+									<option th:each="role: ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"></option>
+								</select>
+								<select class="custom-input form-control" th:unless="${employee.employeeId}" th:field="*{role.roleId}" id="employee-role">
+									<option selected value="">Assign role</option>
+									<option th:each="role: ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"></option>
+								</select>
+							</div>
+							<div class="new-resource__details-field">
+								<div class="confirmation-field">
+									<div class="custom__checkbox-container">
+	                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action" th:if="${employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}">
+	                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action" th:unless="${employeeId}">
+	                                </div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="new-resource__buttons">
+							<button class="btn custom-button custom-button--terminate neo__outset" th:if="${employeeId} != ${loggedInUserId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" onclick="terminateEmployee()">Terminate</button>
+							<button class="btn custom-button custom-button--update neo__outset" th:if="${employeeId}" th:attrappend="disabled=${employee.employeeWorkingStatus?'':'disabled'}" onclick="updateEmployeeDetails()">Update</button>
+							<button class="btn custom-button custom-button--cancel neo__outset" th:unless="${employeeId}" onclick="cancelSaveEmployee()">Cancel</button>
+							<button class="btn custom-button custom-button--save neo__outset" th:unless="${employeeId}" onclick="saveEmployeeDetails()">Save</button>
+						</div>
+						
+						<div class="new-resource__terminated" th:if="${employee.employeeId}" th:unless="${employee.employeeWorkingStatus}">
+							<span class="new-resource__text text-danger" th:if="${#strings.toUpperCase(employee.employeeGender).contains('FEMALE')}" th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)} + ' is no longer working with ' + ${companyName} + '. Her contract was terminated on ' + ${#calendars.format(employee.dateTerminated,'EEE, d MMM yyyy HH:mm:ss')}"></span>
+							<span class="new-resource__text text-danger" th:unless="${#strings.toUpperCase(employee.employeeGender).contains('FEMALE')}" th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)} + ' is no longer working with ' + ${companyName} + '. His contract was terminated on ' + ${#calendars.format(employee.dateTerminated,'EEE, d MMM yyyy HH:mm:ss')}"></span>
+						</div>
+					</div>
+				</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+			</div>
+		</main>
+	</section>
+	<div th:replace="fragments/common :: required-scripts"></div>
+	<script type="text/javascript" th:inline="javascript">
+
+		const employee = /*[[${employee}]]*/ 'default';
+		const flatPickrConfig = {
+		    altFormat: "F j, Y",
+		    dateFormat: "Y-m-d",
+		    maxDate: "today"
+		};
+		
+		if(employee.employeeId) {
+			flatPickrConfig.altInput = false;
+			flatPickrConfig.defaultDate = new Array(employee.employeeDOB);
+			$("#employee-dob").flatpickr(flatPickrConfig);
+		} else {
+			flatPickrConfig.altInput = true;
+			$("#employee-dob").flatpickr(flatPickrConfig);			
+		}
+		
+		const saveEmployeeDetails = () => {
+			
+			if(validateForm()) {		
+	
+				const empFname = $('#employee-first-name').val().toUpperCase();
+				const empLname = $('#employee-last-name').val().toUpperCase();
+				const empContact = $('#employee-contact').val();
+				const empDOB = $('#employee-dob').val();
+				const empAddress = $('#employee-address').val().toUpperCase();
+				const empEmail = $('#employee-email').val();
+				const empGender = $('#employee-gender option:selected').val();
+				const empBranch = $('#employee-branch option:selected').val();
+				const empRole = $('#employee-role option:selected').val();
+	
+				const employee = {
+					"employeeFirstName": empFname,
+					"employeeLastName": empLname,
+					"employeeContact": empContact,
+					"employeeDOB": empDOB,
+					"employeeGender": empGender,
+					"employeeAddress": empAddress,
+					"employeeEmail": empEmail,
+					"employeeBranch": empBranch,
+					"employeeRole": empRole
+				};
+	
+				$.ajax({
+					url: `${CONTEXT}api/v1/employees`,
+					method: `POST`,
+					contentType: `application/json`,
+					data: JSON.stringify(employee),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: ()=> {
+	
+						swal({
+							type: 'success',
+							title: 'Success',
+							text: 'Employee has been created',
+							showConfirmButton: true,
+							showCancelButton: false,
+							confirmButtonText: 'Back'
+						});
+	
+						$('.confirm').on('click', ()=> {
+							window.location.href = `${CONTEXT}employees`;
+						});
+	
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: false,
+							timer: 2000
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}	
+		};
+		
+		
+		const updateEmployeeDetails = () => {
+			
+			if(validateForm()) {		
+				const empId = $('#employeeId').val();
+				const empLname = $('#employee-last-name').val().toUpperCase();
+				const empContact = $('#employee-contact').val();
+				const empAddress = $('#employee-address').val().toUpperCase();
+				const empEmail = $('#employee-email').val();
+				const empBranch = $('#employee-branch option:selected').val();
+				const empRole = $('#employee-role option:selected').val();
+	
+				const employee = {
+					"employeeLastName": empLname,
+					"employeeContact": empContact,
+					"employeeAddress": empAddress,
+					"employeeEmail": empEmail,
+					"employeeBranch": empBranch,
+					"employeeRole": empRole
+				};
+	
+				$.ajax({
+					url: `${CONTEXT}api/v1/employees/${empId}`,
+					method: `PUT`,
+					contentType: `application/json`,
+					data: JSON.stringify(employee),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--update').attr('disabled',true);
+					},
+					success: ()=> {
+
+						swal({
+							type: 'success',
+							title: 'Success',
+							text: 'Employee has been updated',
+							showConfirmButton: false,
+							timer: 2000
+						});
+	
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: false,
+							timer: 2000
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--update').attr('disabled',false);
+					}
+				});
+			}	
+		};
+		
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;	
+			
+			if($('#employee-role').val() === ""){
+				$("#employee-role").addClass('border border-danger');
+				msg = "Specify employee's role";
+				isValidated = false;
+			} else {
+				$("#employee-role").removeClass("border-danger").addClass('border border-success');
+			}	
+			
+			if($('#employee-branch').val() === ""){
+				$("#employee-branch").addClass('border border-danger');
+				msg = "Chose a branch where employee will be stationed";
+				isValidated = false;
+			} else {
+				$("#employee-branch").removeClass("border-danger").addClass('border border-success');
+			}      
+			
+			if($('#employee-gender').val() === ""){
+				$("#employee-gender").addClass('border border-danger');
+				msg = "Select employee's gender";
+				isValidated = false;
+			} else {
+				$("#employee-gender").removeClass("border-danger").addClass('border border-success');
+			}
+			
+			if($('#employee-address').val() === "") {
+				$("#employee-address").addClass('border border-danger');
+				msg = "Provide employee's residential address";
+				isValidated = false;		
+			} else {
+				$("#employee-address").removeClass("border-danger").addClass('border border-success');
+			}    
+	
+			if ($("#employee-email").val() === "") {
+                $("#employee-email").removeClass('border-success').addClass('border border-danger');
+				msg = "Specify employee's email address";
+                isValidated = false;
+            } else {
+            	const email = $("#employee-email").val();
+                if (email.length > 10) {
+                      const validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                      validEmail.test(email.toLowerCase());
+                      if (validEmail) {
+                             $("#employee-email").removeClass('border-danger').addClass('border border-success');
+                      } else {
+                             $("#employee-email").removeClass('border-success').addClass('border border-danger');
+                             isValidated = false;
+                             msg = "Invalid Email-Address";
+                      }
+                } else {
+                      $("#employee-email").removeClass('border-success').addClass('border border-danger');
+                      isValidated = false;
+                      msg = "Email-Address must be more than 10 characters";
+                }
+            } 
+			
+			if($('#employee-dob').val() === ""){
+				$(".custom-input.form-control.input").addClass('border border-danger');
+				msg = "Specify employee's date of birth";
+				isValidated = false;	
+			} else {
+				$(".custom-input.form-control.input").removeClass("border-danger border-warning").addClass('border border-success');
+			}
+			
+			if ($('#employee-contact').val() === "") {
+				$("#employee-contact").removeClass("border-sucess").addClass('border border-danger');
+				msg = "Enter employee's phone number";
+				isValidated = false;
+			} else {
+				const number = $('#employee-contact').val();
+				const thirdPhoneNumberValue = number.toString().charAt(2);
+				if (number.length === 10) {
+					if (number.toString().substring(0, 2) === '02' || number.toString().substring(0, 2) === '05') {
+						if (thirdPhoneNumberValue === '0' || thirdPhoneNumberValue === '4' || thirdPhoneNumberValue === '5' ||
+							thirdPhoneNumberValue === '6' || thirdPhoneNumberValue === '7' || thirdPhoneNumberValue === '9') {
+							$("#employee-contact").removeClass("border-danger").addClass('border border-success');
+						} else {
+							isValidated = false;
+							msg = `Phone number invalid.`;
+							$("#employee-contact").removeClass("border-sucess").addClass('border border-danger');
+						}
+					} else {
+						isValidated = false;
+						msg = `Phone number must start with 02 or 05.`;
+						$("#employee-contact").removeClass("border-sucess").addClass('border border-danger');
+					}
+				} else {
+					isValidated = false;
+					msg = `Phone number must be 10 numbers.`;
+					$("#employee-contact").removeClass("border-sucess").addClass('border border-danger');
+				}
+			}
+			
+			if($('#employee-last-name').val() === "") {
+				$("#employee-last-name").addClass('border border-danger');
+				msg = "Provide employee's last name";
+				isValidated = false;
+			} else {
+				
+				if($('#employee-last-name').val().length < 3 || $('#employee-last-name').val().length > 60) {
+					$("#employee-last-name").addClass('border border-danger');
+					msg = "Employee last name must be between 3 to 60 characters";
+					isValidated = false;
+				} else {
+					$("#employee-last-name").removeClass("border-danger").addClass('border border-success');			
+				}
+			}
+						
+			if($('#employee-first-name').val() === "") {
+				$("#employee-first-name").addClass('border border-danger');
+				msg = "Provide employee's first name";
+				isValidated = false;
+			} else {
+				
+				if($('#employee-first-name').val().length < 3 || $('#employee-first-name').val().length > 60) {
+					$("#employee-first-name").addClass('border border-danger');
+					msg = "Employee first name must be between 3 to 60 characters";
+					isValidated = false;
+				} else {
+					$("#employee-first-name").removeClass("border-danger").addClass("border border-success");			
+				}
+			}
+
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+	
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+					if ($('#employeeId').val() !== "")
+						msg = "Confirm update employee details";
+					else
+						msg = "Confirm create employee";
+						
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 1700
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+
+		
+		const cancelSaveEmployee = () => {
+			$('#employee-first-name').val('');
+			$('#employee-last-name').val('');
+			$('#employee-contact').val('');
+			$('#employee-email').val('');
+			$('#employee-dob').val('');
+			$('#employee-address').val('');
+			$('#employee-gender').val('Select gender').trigger('change');
+			$('#employee-branch').val('Choose branch').trigger('change');
+			$('#employee-role').val('Assign role').trigger('change');
+		};
+		
+		
+		const terminateEmployee = () => {
+			if($('#confirm-action').is(":checked")) {			
+				const empFname = $('#employee-first-name').val().toUpperCase();
+				swal({
+					type: 'warning',
+					title: `Terminate ${empFname}!`,
+					text: `You're a about to terminate ${empFname}. Cancel if this was not planned. Proceed otherwise`,
+					showConfirmButton: true,
+					showCancelButton: true,
+					confirmButtonText: 'Terminate!'
+				});
+				$('.confirm').on('click', ()=> {
+	
+					const empId = $('#employeeId').val();	
+					$.ajax({
+						url: `${CONTEXT}api/v1/employees/${empId}`,
+						method: `DELETE`,
+						beforeSend: ()=> {
+							NProgress.start();	
+							$('.custom-button--terminate').attr('disabled',true);	
+						},
+						success: ()=> {
+	
+							swal({
+								type: 'success',
+								title: 'Success',
+								text: `${empFname} has been terminated, he will no longer be able to login to this application`,
+								showConfirmButton: true,
+								showCancelButton: false,
+								confirmButtonText: 'Done'
+							});
+		
+							$('.confirm').on('click', ()=> {
+								window.location.href = `${CONTEXT}employees`;
+							})
+	
+						},
+						error: (jXHR, statusText, statusCode)=> {
+							swal({
+								type: 'error',
+								title: 'Sorry',
+								text: jXHR.responseJSON.message,
+								showConfirmButton: false,
+								timer: 2000
+							});
+						},
+						complete: ()=> {
+							NProgress.done();
+							NProgress.remove();
+							$('.custom-button--terminate').attr('disabled',false);
+						}
+					}); 
+				});	
+				$('.cancel').on('click', ()=> {					
+					$('#confirm-action').prop('checked', false);
+				});
+					
+			} else {
+				$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+				setTimeout(()=> {
+					$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+				},1000);
+				
+				swal({
+				type: 'warning',
+					title: 'Warning',
+					text: "Confirm employee termination",
+					showConfirmButton: false,
+					timer: 1700
+				});
+			}					
+		};
+		
+		$('#employee-first-name').on('input', function (event) {
+	        this.value = this.value.replace(/[^a-zA-Z-]/g, '');
+	    });
+		$('#employee-last-name').on('input', function (event) {
+			this.value = this.value.replace(/[^a-zA-Z- ]/g, '');
+	    });
+		$('#employee-contact').on('input', function (event) {
+	        this.value = this.value.replace(/[^0-9]/g, '');
+	    });
+	    
+	    //TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(document).on('keydown', (event)=> {
+		    if(event.keyCode === 13){
+		    	if($('.custom-button--save').length) {		    	
+		        	event.preventDefault(); // Ensure it is only this code that runs
+		        	saveEmployeeDetails();
+		    	} else if($('.custom-button--update').length) {
+		    		event.preventDefault(); // Ensure it is only this code that runs
+		        	updateEmployeeDetails();
+		    	}
+		    }
+		});
+	</script>
+</body>
+</html>

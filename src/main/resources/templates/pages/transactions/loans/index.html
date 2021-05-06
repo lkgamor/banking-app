@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(Loans)"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header(|<a href='transactions'>TRANSACTIONS</a> > Loans|, ${pageCount})"></div>
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find a loan...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>			
+               		<div th:replace="fragments/common :: tables-filter(true)"></div>			
+					<a class="neo__outset btn resource__add" th:href="@{/transactions/add}"><i class="fas fa-plus"></i> New Loan</a>
+               </div>
+               <div class="application__body">
+               		<table class="application__table table table-striped table-sm text-center">
+						<thead class="application__table--head text-left">
+							<tr>
+								<th class="t-head">Loan ID</th>
+								<th class="t-head">Account No_</th>
+								<th class="t-head">Account Name</th>
+								<th class="t-head">Amount</th>
+								<th class="t-head">Payed</th>
+								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" >Issued By</th>
+								<th class="t-head">Branch</th>
+								<th class="t-head">Date Issued</th>
+								<th class="t-head">Status</th>
+							</tr>
+						</thead>
+						<tbody class="application__table--body text-left">
+							<tr class="transaction__record loan__record" th:each="loan : ${loans}" th:id="${loan.content.loanId}">
+								<td class="transaction__number">
+									<a th:href="@{|/loans/${loan.content.loanId}|}" th:text="'#' + ${loan.content.loanId} ?: 'N/A'" th:title="${loan.content.loanId} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__account-number">
+									<a th:href="@{|/accounts/${loan.content.loanAccountNumber}|}" th:text="'#' + ${#strings.toUpperCase(loan.content.loanAccountNumber)} ?: 'N/A'" th:title="${#strings.toUpperCase(loan.content.loanAccountNumber)} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__account-name" th:text="${#strings.capitalize(loan.content.loanAccountName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.loanAccountName)} ?: 'N/A'"></td>						
+								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(loan.content.loanAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(loan.content.loanAmount)} ?: 'N/A'"></td>
+								<td class="transaction__amount-payed ghana-cedi-symbol" th:text="${#strings.capitalize(loan.content.loanPayed)} ?: '0.00'" th:title="'GH₵ ' + ${#strings.capitalize(loan.content.loanPayed)} ?: '0.00'"></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__branch" th:text="${#strings.capitalize(loan.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.branch.branchName)} ?: 'N/A'"></td>
+								<td class="transaction__date" th:text="${#calendars.format(loan.content.loanDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(loan.content.loanDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
+								<td	class="resource__status">
+									<span class="resource__status--state inactive cursor-pointer" th:data-loan-id="${loan.content.loanId}" th:if="${loan.content.loanStatus} AND ${loan.content.loanPayed &lt; 0.1}">
+										<span><i class="fas fa-times-circle" data-toggle="tooltip" title="Loan hasn't been paid yet"></i></span>
+										<span class="loan-status-message">Not Paid</span>
+									</span>
+									<span class="resource__status--state warning cursor-pointer" th:data-loan-id="${loan.content.loanId}" th:if="${loan.content.loanStatus} AND ${loan.content.loanPayed &gt; 0.0}">
+										<span><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Loan has been partially paid"></i></span>
+										<span class="loan-status-message">Partly Paid</span>
+									</span>
+									<span class="resource__status--state active" th:unless="${loan.content.loanStatus}">
+										<span><i class="fas fa-check-circle" data-toggle="tooltip" title="Loan has been paid off"></i></span>
+										<span class="loan-status-message">Fully Paid</span>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="void" th:unless="${loans.metadata.totalElements}">
+						<span class="void__text">NO LOANS TAKEN</span>
+						<img class="void__image" alt="No Loans" th:src="@{/images/transactions.svg}">
+					</div>
+					
+					<nav class="pagination-nav" aria-label="" th:if="${loans.metadata.totalElements}">
+						<ul class="pagination">
+					        <li th:class="${loans.metadata.number == 0} ? 'disabled' : ''">
+					            <a th:if="${loans.metadata.number == 0}" href="javascript:void(0);">Previous</a>
+					            <a th:unless="${loans.metadata.number == 0}" th:href="@{${'/loans'}(page=${loans.metadata.number-1},size=${loans.metadata.size})}">Previous</a>
+					        </li>					
+					        <li th:if="${loans.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, 2)}" th:class="${loans.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${loans.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${loans.metadata.number == pageNo}" th:href="@{${'/loans'}(page=${pageNo},size=${loans.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:unless="${loans.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, loans.metadata.totalPages - 1)}" th:class="${loans.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${loans.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${loans.metadata.number == pageNo}" th:href="@{${'/loans'}(page=${pageNo},size=${loans.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:class="${loans.metadata.number + 1} == ${loans.metadata.totalPages} ? 'disabled' : ''">
+					           <a th:if="${loans.metadata.number + 1} == ${loans.metadata.totalPages}" href="javascript:void(0);">Next</a>
+					           <a th:unless="${loans.metadata.number + 1} == ${loans.metadata.totalPages}" th:href="@{${'/loans'}(page=${loans.metadata.number+1},size=${loans.metadata.size})}">Next</a>
+					        </li>
+					    </ul>
+					</nav>          
+               	</div>               	
+               <div class="configuration--add loan-payment">
+				    <div class="title">LOAN PAYMENT</div>
+				    <div class="body">
+				    	<span class="body__description text--gray my-2">Provide required loan payment details.</span>
+    					<div class="new-transaction__summary">
+							<div class="new-transaction__summary-body">
+							 	<fieldset class="new-transaction__summary-details">
+							        <span class="summary__title">Loan ID</span>
+							        <span class="summary__value nowrap" id="loan-id">N/A</span>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details">
+							        <span class="summary__title">Account Name</span>
+							        <span class="summary__value" id="summary-account-name">N/A</span>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details">
+							        <span class="summary__title">Account Number</span>
+							        <span class="summary__value" id="account-number">N/A</span>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details">
+							        <span class="summary__title">Loan Taken</span>
+							        <span class="summary__value ghana-cedi-symbol" id="loan-amount">N/A</span>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details">
+							        <span class="summary__title">Payment Confirmed By</span>
+							        <span class="summary__value" th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}">N/A</span>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details">
+							        <span class="summary__title ghana-cedi-symbol">Amount To Pay</span>
+							        <input class="custom-input form-control mt-2" id="loan-payment-amount" name="form-control" type="number" placeholder="0.00" required>
+							    </fieldset>
+							    <fieldset class="new-transaction__summary-details confirmation-field">
+							        <div class="custom__checkbox-container">
+	                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Loan Payment">
+	                                </div>
+							    </fieldset>
+							</div>
+						</div>
+						<div class="body__buttons mt-3">
+							<button class="btn custom-button custom-button--save neo__outset mt-2 mb-4" onclick="saveLoanPayment()">Make Payment</button>
+							<button class="btn custom-button bg-secondary text--white neo__outset" onclick="cancelOperation()">Close</button>
+						</div>
+					</div>
+				</div> 
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+           </div>
+       </main>
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <!-- <script th:replace="fragments/common :: filter-scripts"></script> -->
+    <!-- <script	type="module" th:src="@{/js/custom/filter.js}"></script> -->
+    <script	type="module" th:src="@{/js/custom/loans.js}"></script>
+    <script type="text/javascript">
+    
+    	$('.resource__status--state.cursor-pointer').on('click', function() {
+    		$('.configuration--add').toggleClass('configuration--show');
+    		
+    		const loanId = $(this).attr('data-loan-id');
+    		const accountName = $(`#${loanId} .transaction__account-name`).text();
+    		const accountNumber = $(`#${loanId} .transaction__account-number a`).text();
+    		const loanAmount = $(`#${loanId} .transaction__amount`).text();
+    		
+    		$('#loan-id').text(loanId);
+    		$('#summary-account-name').text(accountName);
+    		$('#account-number').text(accountNumber);
+    		$('#loan-amount').text(loanAmount);
+    	});
+    	
+    	const saveLoanPayment = () => {
+			if(validateForm()) {
+			
+				const loanId = $('#loan-id').text();
+				const loanAccountName = $('#summary-account-name').text().toUpperCase();
+				const loanAccountNumber = $('#account-number').text().replace('#','');
+				const loanAmount = $('#loan-amount').text();
+				const loanAmountToPay = $('#loan-payment-amount').val();
+				
+				const loanToPay = {
+					"loanAccountName": loanAccountName,
+					"loanAccountNumber": loanAccountNumber,
+					"loanAmount": loanAmount,
+					"loanAmountToPay": loanAmountToPay
+				};
+		
+				$.ajax({
+					url: `${CONTEXT}api/v1/loans/${loanId}`,
+					method: `PUT`,
+					contentType: `application/json`,
+					data: JSON.stringify(loanToPay),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: (amount)=> {
+					
+						let message = new String();
+						if(amount < parseFloat(loanAmount)) {
+							message = 'Loan Partly Payed';
+							$(`#${loanId} .resource__status--state`).removeClass('inactive').addClass('warning');
+							$(`#${loanId} .resource__status--state .loan-status-message`).text('Partly Paid');
+							$(`#${loanId} .resource__status--state`)
+															.find('i')
+															.removeClass('fa-times-circle')
+															.addClass('fa-exclamation-triangle')
+															.attr("data-original-title", "Loan has been partially paid");
+						} else {
+							message = 'Loan Fully Payed';		
+							$(`#${loanId} .resource__status--state`).removeClass('inactive warning cursor-pointer').addClass('active');
+							$(`#${loanId} .resource__status--state .loan-status-message`).text('Fully Paid');	
+							$(`#${loanId} .resource__status--state`)
+															.find('i')
+															.removeClass('fa-times-circle fa-exclamation-triangle')
+															.addClass('fa-check-circle')
+															.attr("data-original-title", "Loan has been paid off");		
+						}
+						
+						$(`#${loanId} .transaction__amount-payed`).text(amount);
+						
+						swal({
+							type: 'success',
+							title: 'Success!',
+							text: message,
+							showConfirmButton: false,
+							timer: 2500
+						});
+						
+						cancelOperation();						
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;				
+			if ($('#loan-payment-amount').val() === "" || $('#loan-payment-amount').val() <= 0) {
+				msg = "Enter a valid amount";
+				isValidated = false;
+			}
+			
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+					msg = "Confirm Loan Payment";
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 2000
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+		
+    	const cancelOperation = () => {
+    		$('.configuration--add').removeClass('configuration--show');
+    		$('#loan-id').text('N/A');
+    		$('#summary-account-name').text('N/A');
+    		$('#account-number').text('N/A');
+    		$('#loan-amount').text('N/A');
+    		$('#loan-payment-amount').val('');
+			$('#confirm-action').prop('checked', false);
+    	};
+    	
+    	$('#loan-payment-amount').on('input', function (event) {
+	        this.value = this.value.replace(/[^0-9.]/g, '');
+	    });
+    	
+    	//TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$('#loan-payment-amount').on('keydown', (event)=> {
+		    if(event.keyCode === 13){	    	
+		        event.preventDefault(); // Ensure it is only this code that runs
+		        saveLoanPayment();
+		    }
+		});
+    </script>
+</body>
+</html>

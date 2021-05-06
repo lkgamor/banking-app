@@ -1,0 +1,549 @@
+:root {
+    /*LIGHT THEME*/
+    --background-light: #dfdfea;
+
+    --neo-shadow-light:rgba(255, 255, 255, .4);
+    --neo-shadow-inset-light: rgba(70, 70, 70, .22);
+
+    --side-card-light: #9dd5f1; 
+    
+
+    /*DARK THEME*/
+    --background-dark: #0a0a1b;
+
+    --neo-shadow-dark: rgba(0, 0, 0, .4);
+    --neo-shadow-inset-dark: rgba(0, 0, 0, .22);
+
+    --side-card-dark: var(--purple-color);
+
+
+    /*GENERAL COLORS*/
+    --purple-color: #2a215e;
+    --pink-color: rgb(226, 79, 170);
+    --light-color: #b8aeae;
+    --light-gray-color: #807d7d;    
+    --accent-color: #2a354c;
+    --transition-duration: 400ms;
+}
+
+.w-70 {
+	width: 70%;
+}
+
+.m-0 {
+	margin: 0 !important
+}
+
+.mt-0, .my-0 {
+	margin-top: 0 !important
+}
+
+.mr-0, .mx-0 {
+	margin-right: 0 !important
+}
+
+.mb-0, .my-0 {
+	margin-bottom: 0 !important
+}
+
+.ml-0, .mx-0 {
+	margin-left: 0 !important
+}
+
+.m-1 {
+	margin: .25rem !important
+}
+
+.mt-1, .my-1 {
+	margin-top: .25rem !important
+}
+
+.mr-1, .mx-1 {
+	margin-right: .25rem !important
+}
+
+.mb-1, .my-1 {
+	margin-bottom: .25rem !important
+}
+
+.ml-1, .mx-1 {
+	margin-left: .25rem !important
+}
+
+.m-2 {
+	margin: .5rem !important
+}
+
+.mt-2, .my-2 {
+	margin-top: .5rem !important
+}
+
+.mr-2, .mx-2 {
+	margin-right: .5rem !important
+}
+
+.mb-2, .my-2 {
+	margin-bottom: .5rem !important
+}
+
+.ml-2, .mx-2 {
+	margin-left: .5rem !important
+}
+
+.m-3 {
+	margin: 1rem !important
+}
+
+.mt-3, .my-3 {
+	margin-top: 1rem !important
+}
+
+.mr-3, .mx-3 {
+	margin-right: 1rem !important
+}
+
+.mb-3, .my-3 {
+	margin-bottom: 1rem !important
+}
+
+.ml-3, .mx-3 {
+	margin-left: 1rem !important
+}
+
+.m-4 {
+	margin: 1.5rem !important
+}
+
+.mt-4, .my-4 {
+	margin-top: 1.5rem !important
+}
+
+.mr-4, .mx-4 {
+	margin-right: 1.5rem !important
+}
+
+.mb-4, .my-4 {
+	margin-bottom: 1.5rem !important
+}
+
+.ml-4, .mx-4 {
+	margin-left: 1.5rem !important
+}
+
+.m-5 {
+	margin: 3rem !important
+}
+
+.mt-5, .my-5 {
+	margin-top: 3rem !important
+}
+
+.mr-5, .mx-5 {
+	margin-right: 3rem !important
+}
+
+.mb-5, .my-5 {
+	margin-bottom: 3rem !important
+}
+
+.ml-5, .mx-5 {
+	margin-left: 3rem !important
+}
+
+.p-0 {
+	padding: 0 !important
+}
+
+.pt-0, .py-0 {
+	padding-top: 0 !important
+}
+
+.pr-0, .px-0 {
+	padding-right: 0 !important
+}
+
+.pb-0, .py-0 {
+	padding-bottom: 0 !important
+}
+
+.pl-0, .px-0 {
+	padding-left: 0 !important
+}
+
+.p-1 {
+	padding: .25rem !important
+}
+
+.pt-1, .py-1 {
+	padding-top: .25rem !important
+}
+
+.pr-1, .px-1 {
+	padding-right: .25rem !important
+}
+
+.pb-1, .py-1 {
+	padding-bottom: .25rem !important
+}
+
+.pl-1, .px-1 {
+	padding-left: .25rem !important
+}
+
+.p-2 {
+	padding: .5rem !important
+}
+
+.pt-2, .py-2 {
+	padding-top: .5rem !important
+}
+
+.pr-2, .px-2 {
+	padding-right: .5rem !important
+}
+
+.pb-2, .py-2 {
+	padding-bottom: .5rem !important
+}
+
+.pl-2, .px-2 {
+	padding-left: .5rem !important
+}
+
+.p-3 {
+	padding: 1rem !important
+}
+
+.pt-3, .py-3 {
+	padding-top: 1rem !important
+}
+
+.pr-3, .px-3 {
+	padding-right: 1rem !important
+}
+
+.pb-3, .py-3 {
+	padding-bottom: 1rem !important
+}
+
+.pl-3, .px-3 {
+	padding-left: 1rem !important
+}
+
+.p-4 {
+	padding: 1.5rem !important
+}
+
+.pt-4, .py-4 {
+	padding-top: 1.5rem !important
+}
+
+.pr-4, .px-4 {
+	padding-right: 1.5rem !important
+}
+
+.pb-4, .py-4 {
+	padding-bottom: 1.5rem !important
+}
+
+.pl-4, .px-4 {
+	padding-left: 1.5rem !important
+}
+
+.p-5 {
+	padding: 3rem !important
+}
+
+.pt-5, .py-5 {
+	padding-top: 3rem !important
+}
+
+.pr-5, .px-5 {
+	padding-right: 3rem !important
+}
+
+.pb-5, .py-5 {
+	padding-bottom: 3rem !important
+}
+
+.pl-5, .px-5 {
+	padding-left: 3rem !important
+}
+
+.m-auto {
+	margin: auto !important
+}
+
+.mt-auto, .my-auto {
+	margin-top: auto !important
+}
+
+.mr-auto, .mx-auto {
+	margin-right: auto !important
+}
+
+.mb-auto, .my-auto {
+	margin-bottom: auto !important
+}
+
+.ml-auto, .mx-auto {
+	margin-left: auto !important
+}
+
+.bg-primary {
+	background-color: #007bff !important
+}
+
+a.bg-primary:focus, a.bg-primary:hover, button.bg-primary:focus, button.bg-primary:hover
+	{
+	background-color: #0062cc !important
+}
+
+.bg-secondary {
+	background-color: #6c757d !important
+}
+
+a.bg-secondary:focus, a.bg-secondary:hover, button.bg-secondary:focus,
+	button.bg-secondary:hover {
+	background-color: #545b62 !important
+}
+
+.bg-success {
+	background-color: #28a745 !important
+}
+
+a.bg-success:focus, a.bg-success:hover, button.bg-success:focus, button.bg-success:hover
+	{
+	background-color: #1e7e34 !important
+}
+
+.bg-info {
+	background-color: #17a2b8 !important
+}
+
+a.bg-info:focus, a.bg-info:hover, button.bg-info:focus, button.bg-info:hover
+	{
+	background-color: #117a8b !important
+}
+
+.bg-warning {
+	background-color: #ffc107 !important
+}
+
+a.bg-warning:focus, a.bg-warning:hover, button.bg-warning:focus, button.bg-warning:hover
+	{
+	background-color: #d39e00 !important
+}
+
+.bg-danger {
+	background-color: #dc3545 !important
+}
+
+a.bg-danger:focus, a.bg-danger:hover, button.bg-danger:focus, button.bg-danger:hover
+	{
+	background-color: #bd2130 !important
+}
+
+.bg-light {
+	background-color: #f8f9fa !important
+}
+
+a.bg-light:focus, a.bg-light:hover, button.bg-light:focus, button.bg-light:hover
+	{
+	background-color: #dae0e5 !important
+}
+
+.bg-dark {
+	background-color: #343a40 !important
+}
+
+a.bg-dark:focus, a.bg-dark:hover, button.bg-dark:focus, button.bg-dark:hover
+	{
+	background-color: #1d2124 !important
+}
+
+.bg-white {
+	background-color: #fff !important
+}
+
+.bg-transparent {
+	background-color: transparent !important
+}
+
+.border {
+	border: 1px solid #dee2e6 !important
+}
+
+.border-top {
+	border-top: 1px solid #dee2e6 !important
+}
+
+.border-right {
+	border-right: 1px solid #dee2e6 !important
+}
+
+.border-bottom {
+	border-bottom: 1px solid #dee2e6 !important
+}
+
+.border-left {
+	border-left: 1px solid #dee2e6 !important
+}
+
+.border-0 {
+	border: 0 !important
+}
+
+.border-top-0 {
+	border-top: 0 !important
+}
+
+.border-right-0 {
+	border-right: 0 !important
+}
+
+.border-bottom-0 {
+	border-bottom: 0 !important
+}
+
+.border-left-0 {
+	border-left: 0 !important
+}
+
+.border-primary {
+	border-color: #007bff !important
+}
+
+.border-secondary {
+	border-color: #6c757d !important
+}
+
+.border-success {
+	border-color: #28a745 !important
+}
+
+.border-info {
+	border-color: #17a2b8 !important
+}
+
+.border-warning {
+	border-color: #ffc107 !important
+}
+
+.border-danger {
+	border-color: #dc3545 !important
+}
+
+.border-light {
+	border-color: #f8f9fa !important
+}
+
+.border-dark {
+	border-color: #343a40 !important
+}
+
+.border-white {
+	border-color: #fff !important
+}
+
+.bg--purple {
+    background: var(--purple-color);
+}
+
+.text--purple {
+    color: var(--purple-color);
+}
+
+.text--gray {
+    color: var(--light-gray-color);
+}
+
+.text--lightgray {
+    color: var(--light-color);
+}
+
+.text--pink {
+    color: var(--pink-color);
+}
+
+.text--white {
+	color: #fff;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.nowrap {
+	white-space: nowrap;	
+}
+
+.w-40 {
+	width: 40% !important;
+}
+
+.w-100 {
+	width: 100% !important;
+}
+
+/* SWEETALERT OVERRIDES*/
+/*---------------------*/
+
+ .sweet-alert {
+    width: 300px !important;
+    padding: 10px !important;
+    top: 40% !important;
+}
+
+.sweet-alert .sa-icon {
+    margin: 10px auto;
+}
+
+.sweet-alert .lead {
+    font-size: 17px;
+}
+
+.sweet-alert .sa-button-container {
+	margin-bottom: .5rem;
+}
+
+.sweet-alert .sa-button-container .confirm,
+.sweet-alert .sa-button-container .cancel {
+	border-radius: 1rem;
+	border: 0;
+    transition: var(--transition-duration) ease;
+    padding: 5px 14px;
+}
+
+.sweet-alert .sa-button-container .confirm:hover,
+.sweet-alert .sa-button-container .confirm:focus,
+.sweet-alert .sa-button-container .confirm:active,
+.sweet-alert .sa-button-container .cancel:hover,
+.sweet-alert .sa-button-container .cancel:focus,
+.sweet-alert .sa-button-container .cancel:active {
+	outline: 0;
+    border: 0;
+    filter: brightness(0.7);
+}
+
+.sweet-alert h2 {
+   color: var(--accent-color);
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.apexcharts-inner.apexcharts-graphical .apexcharts-pie {
+	transition: all var(--transition-duration) ease;
+}

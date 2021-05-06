@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+	<head th:fragment="head(page_title)">
+		<link rel="icon" th:href="@{/images/icon/logo.ico}">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,  minimum-scale=1.0">
+        <title th:text="'Saveright | ' + ${page_title}"></title>
+        <link rel="stylesheet" th:href="@{/css/vendor/fonts/fontawesome-free-5.5.0/css/all.min.css}">
+        <link rel="stylesheet" th:href="@{/css/custom/utilities.css}">
+        <link rel="stylesheet" th:href="@{/css/custom/template.css}">
+		<link rel="stylesheet" th:href="@{/css/custom/toggle-switch.css}">
+        <link rel="stylesheet" th:href="@{/css/custom/error.css}">
+        <link rel="stylesheet" th:href="@{/css/vendor/apexchart/apexcharts.css}">
+        <link rel="stylesheet" th:href="@{/css/vendor/bootstrap/bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{/css/vendor/bootstrap/bootstrap-multiselect.css}">
+		<link rel="stylesheet" th:href="@{/css/vendor/sweetalert/sweetalert.css}">
+		<link rel="stylesheet" th:href="@{/css/vendor/nprogress/nprogress.css}">
+		<link rel="stylesheet" th:href="@{/css/vendor/flatpickr/flatpickr.min.css}">
+	</head>
+	
+	
+	<head th:fragment="error-head(page_title)">
+		<link rel="icon" th:href="@{/images/icon/logo.ico}">
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,  minimum-scale=1.0">
+        <title th:text="'Saveright | ' + ${page_title}"></title>
+        <link rel="stylesheet" th:href="@{/css/custom/error.css}">
+        <link rel="stylesheet" th:href="@{/css/vendor/bootstrap/bootstrap.min.css}">
+	</head>
+
+
+	<aside class="aside--left neo__outset" th:fragment="app-sidebar">
+		<a class="logo" th:href="@{/dashboard}">
+			<img class="company-logo" alt="Saveright Logo" th:src="@{/images/logo.png}">
+		</a>
+		<div class="nav-items">
+			<a class="btn nav-items__link" th:href="@{/accounts}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/accounts') ? 'active' : ''}|">
+				<i class="fas fa-id-card fa-sm"></i> Accounts
+			</a>
+			<a class="btn nav-items__link" th:href="@{/transactions}" 
+			   th:classappend="|${#httpServletRequest.servletPath.startsWith('/transactions') OR
+			   					  #httpServletRequest.servletPath.startsWith('/loans') OR
+			   					  #httpServletRequest.servletPath.startsWith('/deposits') OR
+			   					  #httpServletRequest.servletPath.startsWith('/withdrawals') ? 'active' : ''
+			   					}|">
+				<i class="fas fa-coins fa-sm"></i> Transactions
+			</a>
+			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/employees}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/employees') ? 'active' : ''}|">
+				<i class="fas fa-users fa-sm"></i> Employees
+			</a>
+			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/branches}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/branches') ? 'active' : ''}|">
+				<i class="fas fa-warehouse fa-sm"></i> Branches
+			</a>
+			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/cards}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/cards') ? 'active' : ''}|">
+				<i class="fas fa-address-card fa-sm"></i> Cards
+			</a>
+		</div>
+	</aside>
+
+
+	<div class="dashboard__header" th:fragment="app-header(page_header, page_count)">
+		<div class="filter__options neo__outset"></div>
+		<div class="header-summary">
+			<h3 class="dashboard__header-name" th:utext="${page_header}"></h3>
+			<h3 class="dashboard__header-count" th:text="${page_count}" id="header-count">0</h3>
+		</div>
+		<div class="user__card neo__outset">
+			<div class="user__card-item user__image">
+				<i class="fas fa-user-circle fa-2x"></i>
+			</div>
+			<div class="user__card-item user__name">
+				<span class="font-italic" th:text="${#strings.capitalize(firstname)}"></span>
+			</div>
+			<div class="user__card-item user__dropdown dropdown">
+				<button class="nav-link dropdown-toggle text--lightgray"
+					id="userDropdown" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false"> 
+					<i class="fas fa-angle-down"></i>
+				</button>
+				<div class="dropdown-menu" aria-labelledby="userDropdown">
+					<a class="dropdown-item" th:href="@{/account}" target="_blank">
+						<i class="fas fa-user fa-sm fa-fw"></i> Profile
+					</a> 
+					<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}"
+						class="dropdown-item" th:href="@{/audits}"> 
+						<i class="fas fa-list fa-sm fa-fw"></i> Activity Log
+					</a> 
+					<a class="dropdown-item">
+						<i class="fas fa-warehouse fa-sm fa-fw"></i> Branch Info
+					</a>
+					<a class="dropdown-item" th:href="@{/logout}"> 
+						<i class="fas fa-sign-out-alt fa-sm fa-fw"></i> Logout
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="neo__outset filter" th:fragment="tables-filter(showEmplyeesFilter)">
+		<input class="custom-input form-control" id="filter-date" name="form-control" type="date" placeholder="Filter by period created...">
+		<select class="new-transaction__account-dropdown form-control" id="filter-issuer" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')} AND ${showEmplyeesFilter}">
+			<option selected value="">Filter by employee...</option>
+			<option value="">ALL</option>
+			<option th:each="employee: ${employees}" 
+					th:value="${employee.employeeId}" 
+					th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}" 
+					th:data-name="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}">
+			</option>   
+		</select>
+		<select class="new-transaction__account-dropdown form-control" id="filter-size">
+			<option value="">Row size</option>
+			<option value="5">5</option>
+			<option value="10">10</option>
+			<option value="20">20</option>
+			<option value="50">50</option>
+		</select>
+	</div>		
+			
+				    
+	<div class="notification" id="notificationModal" th:fragment="notification-modal">
+		<div class="modal-body pt-0 px-0">
+			<div class="notification__title p-3" id="notificationTitle">N/A</div>
+			<div class="notification__body">
+				<div class="recent-transactions__card">
+					<span class="recent-transactions__type"></span>
+					<div class="recent-transactions__details" id="notificationMessage">
+						No message received!			
+					</div>			                                
+				</div>
+				<button class="btn custom-button custom-button--update" onclick="closeNotification()">CLOSE</button>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div th:fragment="required-scripts">
+		<script th:src="@{/js/vendor/jquery/jquery.min.js}"></script>
+		<script th:src="@{/js/vendor/bootstrap/popper.min.js}"></script>
+		<script th:src="@{/js/vendor/bootstrap/bootstrap.min.js}"></script>
+		<script th:src="@{/js/vendor/bootstrap/bootstrap-multiselect.js}"></script>
+		<script th:src="@{/js/vendor/nprogress/nprogress.js}"></script>
+		<script th:src="@{/js/vendor/sweetalert/sweetalert.min.js}"></script>
+		<script th:src="@{/js/vendor/jquery/jquery.cookie.js}"></script>
+		<script th:src="@{/js/vendor/chart/canvasjs.min.js}"></script>
+        <script th:src="@{/js/vendor/apexcharts/apexcharts.min.js}"></script>
+		<script	th:src="@{/js/vendor/flatpickr/flatpickr.min.js}"></script>	
+		<script	th:src="@{/js/vendor/centrifugal/centrifuge.js}"></script>	
+		<script	type="module" th:src="@{/js/custom/data.js}"></script>	
+		<script type="text/javascript" th:inline="javascript">	
+					
+			const CONTEXT =  /*[[@{/}]]*/ 'default';		
+			const USER_ROLE = /*[[${employeeRole}]]*/ 'default';
+			const TRANSACTION_PREFIX_LENGTH = /*[[${transactionIdPrefixLength}]]*/ 'default';	
+			
+			$('[data-toggle="popover"]').popover(); 
+			$('[data-toggle="tooltip"]').tooltip(); 
+			
+			const copyItemToClipBoard = item => {
+				let input = document.createElement('input');
+				input.setAttribute('value', item);
+				document.body.appendChild(input);
+				input.select();
+				let result = document.execCommand('copy');
+				document.body.removeChild(input);
+				swal({
+					position: 'top-end',
+					type: 'success',
+					toast: true,
+					title: 'Value has been copied',
+					showConfirmButton: false,
+					timer: 1500
+				});
+				return result;
+			};
+
+		</script>		
+		
+		<script type="text/javascript" th:inline="javascript" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">		
+			const ACCOUNTS_CHANNEL = /*[[${accountChannel}]]*/ 'default';
+			const TRANSACTIONS_CHANNEL = /*[[${transactionChannel}]]*/ 'default';
+			const CENTRIFUGO_WEBSOCKET = /*[[${centrifugoWebSocket}]]*/ 'default';
+			const CENTRIFUGO_ACCESS_TOKEN = /*[[${centrifugoAccessToken}]]*/ 'default';
+			
+			/**
+			 * GET CENTRIFUGO ACCESS TOKEN THEN CONNECT TO VEHICLE UPDATE CHANNEL
+			 * ------------------------------------------------------------------
+			 * @returns {JWT} token -> A valid JWT for connecting to centrifugo
+			 */
+			const establishCentrifugoConnection = () => {
+				
+				/** Create Centrifugo connection instance */
+				const centrifuge = new Centrifuge(CENTRIFUGO_WEBSOCKET);
+				
+				/** Add HS256 Access Token for Authentication */
+				centrifuge.setToken(CENTRIFUGO_ACCESS_TOKEN);
+			
+				/** Subscribe to ${ACCOUNTS_CHANNEL} for receiving published updates */
+				centrifuge.subscribe(ACCOUNTS_CHANNEL, (message)=> {		
+					routeAccountNotificationsForProcessing(message.data);
+				});
+				
+				/** Subscribe to ${TRANSACTIONS_CHANNEL} for receiving published updates */
+				centrifuge.subscribe(TRANSACTIONS_CHANNEL, (message)=> {		
+					routeTransactionNotificationsForProcessing(message.data);
+				});
+				
+				/** Establish connection */
+				centrifuge.connect();
+			};	
+			establishCentrifugoConnection();
+			
+			const routeAccountNotificationsForProcessing = message => {
+				const {accountName, accountNumber, openedBy, dateOpened} = message;
+				const accountMessage = `<em>${openedBy}</em> 
+										opened an account for ${accountName} 
+										with Account Number <a href="${CONTEXT}accounts/${accountNumber}" title="View Account">#${accountNumber}</a> 
+										on <em class="account-date">${new Date(dateOpened).toUTCString()}</em>`;
+				
+				$('#notificationModal .recent-transactions__type').attr('class', 'recent-transactions__type');
+				$('#notificationModal .recent-transactions__type').addClass(`new-account`);
+				$('#notificationTitle').text(`ACCOUNT OPENED ALERT!`);
+				$('#notificationMessage').html(accountMessage);
+				$('#notificationModal').removeClass('notification--hide').addClass('notification--show');
+				setTimeout(()=> {
+					closeNotification();
+				}, 60000);
+			};
+			
+			const routeTransactionNotificationsForProcessing = message => {
+				const {transactionId, transactionIssuedBy, transactionType, transactionAmount, transactionAccountNumber, transactionDate} = message;
+				const transactionMessage = `<em>${transactionIssuedBy}</em> 
+											issued a ${transactionType} 
+											of <a href="${CONTEXT}${transactionType.toLowerCase()}s/${transactionId}" title="View Transaction" class="recent-transactions__amount">${transactionAmount}</a> 
+											for Account Number <em>#${transactionAccountNumber}</em> 
+											on <em class="account-date">${new Date(transactionDate).toUTCString()}</em>`;
+				
+				$('#notificationModal .recent-transactions__type').attr('class', 'recent-transactions__type');
+				$('#notificationModal .recent-transactions__type').addClass(`${transactionType.toLowerCase()}`);
+				$('#notificationTitle').text(`${transactionType} ALERT!`);
+				$('#notificationMessage').html(transactionMessage);
+				$('#notificationModal').removeClass('notification--hide').addClass('notification--show');
+				setTimeout(()=> {
+					closeNotification();
+				}, 60000);
+			};
+			
+			const closeNotification = () => {
+				$('.recent-transactions__type').attr('class', 'recent-transactions__type');
+				$('#notificationTitle').text(`NO ALERTS!`);
+				$('#notificationMessage').html(``);
+				$('#notificationModal').removeClass('notification--show').addClass('notification--hide');
+			};
+		</script>	    	
+	</div>
+		
+	<script type="text/javascript" th:inline="javascript" th:fragment="filter-scripts">  
+
+		/** FILTER TABLE BY DATE: START*/
+		
+		const filterOptions = document.querySelector(DOMClasses.filterOptionsContainer);
+		
+		const flatPickrConfig = {
+			mode: DOMStrings.flatpickerMode,
+			dateFormat: DOMStrings.flatpickerDateFormat,
+			maxDate: DOMStrings.flatpickerMaxDate,
+			onChange: (selectedDates, dateStr, instance) => {
+				if (selectedDates.length == 2) {
+					const filterDateStartUI = new Date(selectedDates[0]).toDateString();
+					const filterDateEndUI = new Date(selectedDates[1]).toDateString();
+					const filterDateStartCookie = new Date(selectedDates[0]).toISOString();
+					const filterDateEndCookie = new Date(selectedDates[1]).toISOString();
+					
+					Cookies.set(DOMStrings.filterDateCookie, `${filterDateStartCookie}_${filterDateEndCookie}`, { path: CONTEXT });
+					localStorage.setItem(DOMStrings.filterDateCookie, `${filterDateStartUI} - ${filterDateEndUI}`);
+		
+					initFilterByDate();
+					
+					initSearchRequest();
+				}
+			}
+		};
+		
+		$(DOMIds.filterDatePicker).flatpickr(flatPickrConfig);
+		
+		const initFilterByDate = () => {
+			const filterDateCookie = Cookies.get(DOMStrings.filterDateCookie);
+			const filterDateStart = filterDateCookie.split('_')[0].split('T')[0];
+			const filterDateEnd = filterDateCookie.split('_')[1].split('T')[0];
+			const filterDateUI = localStorage.getItem(DOMStrings.filterDateCookie);
+			flatPickrConfig.defaultDate = [filterDateStart, filterDateEnd];
+		
+			if ($(DOMIds.filterSelectedDate).length > 0) {
+				$(DOMIds.filterSelectedDate).find('.text').text(`PERIOD: ${filterDateUI}`);
+			} else {
+				const filterOption = `<div class="filter__option" id="filter__option-date">
+												<span class="text">PERIOD: ${filterDateUI}</span> 
+												<span class="close" id="close-date"><i class="fas fa-times-circle"></i></span>
+											  </div>`;
+				filterOptions.insertAdjacentHTML('beforeend', filterOption);
+			}
+		
+			$(DOMIds.filterCloseDate).click(function() {
+				clearDateFilter();
+				setTimeout(() => {
+					$(DOMIds.filterSelectedDate).remove();
+					removeFilterOptionsContainer();
+				}, 200);
+				
+				initSearchRequest();
+			});
+		
+			$(DOMClasses.filterOptionsContainer).addClass(DOMStrings.filterShow);
+		};
+		
+		const clearDateFilter = () => {
+			$(DOMIds.filterSelectedDate).fadeOut();
+			Cookies.remove(DOMStrings.filterDateCookie, { path: CONTEXT });
+			localStorage.removeItem(DOMStrings.filterDateCookie);
+		};
+		
+		/** FILTER TABLE BY DATE: END*/
+		
+		
+		
+		/** FILTER TABLE BY EMPLOYEE: START*/
+		
+		const initFilterByEmployee = () => {
+			const filterEmployeeId = Cookies.get(DOMStrings.filterEmployeeCookie);
+			const filterEmployeeName = localStorage.getItem(DOMStrings.filterEmployeeCookie);
+			$(DOMIds.filterEmployeePicker).val(filterEmployeeId);
+		
+			if ($(DOMIds.filterSelectedEmployee).length > 0) {
+				$(DOMIds.filterSelectedEmployee).find('.text').text(`ISSUED BY: ${filterEmployeeName}`);
+			} else {
+				const filterOption = `<div class="filter__option" id="filter__option-employee">
+												<span class="text">ISSUED BY: ${filterEmployeeName}</span> 
+												<span class="close" id="close-employee"><i class="fas fa-times-circle"></i></span>
+											  </div>`;
+				filterOptions.insertAdjacentHTML('beforeend', filterOption);
+			}
+		
+			$(DOMIds.filterCloseEmployee).click(function() {
+				clearEmployeeFilter();
+		
+				setTimeout(() => {
+					$(DOMIds.filterSelectedEmployee).remove();
+					removeFilterOptionsContainer();
+				}, 200);
+				
+				initSearchRequest();
+			});
+		
+			$(DOMClasses.filterOptionsContainer).addClass(DOMStrings.filterShow);
+		};
+		
+		$(DOMIds.filterEmployeePicker).multiselect({
+			enableFiltering: true,
+			enableCaseInsensitiveFiltering: false,
+			onChange: function(element, checked) {
+				const employeeId = this.$select.val();
+				if (element[0].attributes.getNamedItem('data-name')) {
+					const employeeName = element[0].attributes.getNamedItem('data-name').value;
+					Cookies.set(DOMStrings.filterEmployeeCookie, employeeId, { path: CONTEXT });
+					localStorage.setItem(DOMStrings.filterEmployeeCookie, employeeName);
+		
+					initFilterByEmployee();
+				}
+				else {
+					Cookies.remove(DOMStrings.filterEmployeeCookie, { path: CONTEXT });
+					localStorage.removeItem(DOMStrings.filterEmployeeCookie);
+					clearEmployeeFilter();
+				}
+		
+				initSearchRequest();
+			}
+		});
+		
+		const clearEmployeeFilter = () => {
+			$(DOMIds.filterSelectedEmployee).fadeOut();
+			Cookies.remove(DOMStrings.filterEmployeeCookie, { path: CONTEXT });
+			localStorage.removeItem(DOMStrings.filterEmployeeCookie);
+		};
+		
+		/** FILTER TABLE BY EMPLOYEE: END*/
+		
+		
+		/** FILTER TABLE BY SIZE: START*/
+		
+		$(DOMIds.filterSizePicker).multiselect({
+			enableFiltering: false,
+			enableCaseInsensitiveFiltering: false,
+			onChange: function(element, checked) {
+				
+				const rowSize = this.$select.val();
+				Cookies.set(DOMStrings.filterSizeCookie, rowSize, { path: CONTEXT });
+		
+				initSearchRequest();
+			}
+		});
+		
+		/** FILTER TABLE BY SIZE: END*/
+		
+		
+		const removeFilterOptionsContainer = () => {
+			if ($(DOMClasses.filterOption).length === 0) $(DOMClasses.filterOptionsContainer).remove();
+		};
+		
+		
+		const initCookies = () => {
+			if (typeof Cookies.get(DOMStrings.filterSizeCookie) !== 'undefined')
+				$(DOMIds.filterSizePicker).multiselect('select', Cookies.get(DOMStrings.filterSizeCookie));
+			else {
+				Cookies.set(DOMStrings.filterSizeCookie, 10, { path: CONTEXT });
+				$(DOMIds.filterSizePicker).multiselect('select', 10);
+			}
+		
+			if (typeof Cookies.get(DOMStrings.filterEmployeeCookie) !== 'undefined') {
+				initFilterByEmployee();
+			}
+		
+			if (typeof Cookies.get(DOMStrings.filterDateCookie) !== 'undefined') {
+				initFilterByDate();
+			}
+		};
+		initCookies();
+		
+		
+		//TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(DOMClasses.searchField).on(DOMEvents.keyDown, (event) => {
+			if (event.keyCode === 13) {
+				event.preventDefault(); // Ensure it is only this code that runs
+				initSearchRequest();
+			}
+		});
+		
+		
+		//FUNCTION TO GET INPUT VALUES FROM SEARCH FIELD
+		$(DOMClasses.searchField).on(DOMEvents.keyUp, function() {
+			initSearchRequest();
+		});
+			
+		//REMOVE ANY REFERENCE TO 'query_param' FROM SESSIONSTORAGE
+		sessionStorage.removeItem('query_param');
+	</script>	
+</body>

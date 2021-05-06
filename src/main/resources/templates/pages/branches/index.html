@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('Company Branches')"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header('COMPANY BRANCHES', ${pageCount})"></div>               
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find a branch...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>				
+					<button class="neo__outset btn resource__add"><i class="fas fa-plus"></i> New Branch</button>
+               </div>
+               <div class="application__body">		
+					<div class="configuration configuration-branches">
+						<div th:each="branch : ${branches}" class="custom-card-container">
+							<div class="custom-card neo__outset" th:id="${branch.branchId}" onclick="getBranchDetails(this.id)">
+								<div class="card__name" th:text="${branch.branchName}"></div>
+							</div>
+						</div>
+					</div>
+					<div class="void" th:unless="${branches.totalElements}">
+						<span class="void__text">NO BRANCHES CREATED</span>
+						<img class="void__image" alt="No Branch" th:src="@{/images/branches.svg}">
+					</div>				
+               </div>
+               <div class="configuration--add">
+				    <div class="title">OPEN NEW BRANCH</div>
+				    <div class="body">
+				    	<i class="fas fa-warehouse fa-3x mb-5"></i>
+				    	<span class="body__description text--gray">Provide name of the new branch you want to open.</span>
+    					<div class="body__inputs">
+    						<input class="custom-input form-control mb-5" id="branch-name" name="form-control" type="text" placeholder="eg. Main Branch" required>
+    						<input class="custom-input form-control mb-5" id="branch-address" name="form-control" type="text" placeholder="eg. Accra Central" required>
+    					</div>    					
+						<div class="w-100 mb-5">
+							<div class="confirmation-field">
+								<div class="custom__checkbox-container">
+			                      	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action">
+			                    </div>
+							</div>
+						</div>
+						<div class="body__buttons">
+							<button class="btn custom-button custom-button--save neo__outset mt-2 mb-4" onclick="saveBranch()">Create Branch</button>
+							<button class="btn custom-button bg-secondary text--white neo__outset" onclick="cancelOperation()">Cancel</button>
+						</div>
+					</div>
+				</div>  
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div>      
+           </div>                   
+       </main>       
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <script type="text/javascript" th:inline="javascript">
+    
+    	$('.resource__add').on('click', ()=> {
+    		$('.configuration--add').toggleClass('configuration--show');
+    	});
+    	
+    	const saveBranch = () => {
+			if(validateForm()) {
+				const branchName = $('#branch-name').val().toUpperCase();
+				const branchAddress = $('#branch-address').val().toUpperCase();
+				
+				const branch = {
+					"branchName": branchName,
+					"branchAddress": branchAddress
+				};
+		
+				$.ajax({
+					url: `${CONTEXT}api/v1/branches`,
+					method: `POST`,
+					contentType: `application/json`,
+					data: JSON.stringify(branch),
+					beforeSend: ()=> {
+						NProgress.start();	
+						$('.custom-button--save').attr('disabled',true);	
+					},
+					success: (branch)=> {
+						swal({
+							type: 'success',
+							title: 'Success!',
+							text: 'New branch created',
+							showConfirmButton: false,
+							timer: 1500
+						});
+						cancelOperation();
+						const configurationCardsContainer = document.querySelector('.configuration');
+						const newconfigurationCard = `<div class="custom-card-container">
+														<div class="custom-card neo__outset" id="${branch.branchId}" >
+															<div class="card__name">${branch.branchName}</div>
+														</div>
+												  </div>`;
+						configurationCardsContainer.insertAdjacentHTML('beforeend', newconfigurationCard);
+						$('.void').length && $('.void').remove();
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};		
+		
+		const getBranchDetails = branchId => {		
+			$.ajax({
+				url: `${CONTEXT}api/v1/branches/${branchId}`,
+				beforeSend: ()=> {
+					NProgress.start();		
+				},
+				success: (branch)=> {
+					initUpdateBranch(branchId, branch);
+					$('.configuration--add').addClass('configuration--show');
+				},
+				error: (jXHR, statusText, statusCode)=> {
+						
+				},
+				complete: ()=> {
+					NProgress.done();
+					NProgress.remove();
+				}
+			});
+		};
+		
+		const initUpdateBranch = (branchId, branch) => {
+			$('.custom-button--save').remove();
+			$('#branch-name').val(branch.branchName);
+			$('#branch-address').val(branch.branchAddress);
+			$('.configuration--add .title').text('UPDATE BRANCH');
+			$('.configuration--add .body__description').text('If the name or address of this branch has changed, you may update it here accordingly.');
+			
+			const updateButtonContainer = document.querySelector('.body__buttons');
+			const updateButton = `<button class="btn custom-button custom-button--save neo__outset mt-2 mb-4" id="update--${branchId}" onclick="updateBranch(this.id)">Update Branch</button>`;
+			updateButtonContainer.insertAdjacentHTML('afterbegin', updateButton);
+		};
+			
+		const updateBranch = updateBranchId => {
+			const branchId = updateBranchId.split('--')[1];
+			if(validateForm()) {
+				const branchName = $('#branch-name').val().toUpperCase();
+				const branchAddress = $('#branch-address').val().toUpperCase();
+					
+				const branch = {
+					"branchName": branchName,
+					"branchAddress": branchAddress
+				};
+			
+				$.ajax({
+					url: `${CONTEXT}api/v1/branches/${branchId}`,
+					method: `PUT`,
+					contentType: `application/json`,
+					data: JSON.stringify(branch),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: (branch)=> {
+						swal({
+							type: 'success',
+							title: 'Success!',
+							text: 'Branch details updated',
+							showConfirmButton: false,
+							timer: 1500
+						});
+						$(`#${branchId} .card__name`).text(branch.branchName);
+						cancelOperation();
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;				
+			if ($('#branch-address').val() === "" || $('#branch-address').val().toUpperCase() === "N/A") {
+				msg = "Provide a valid branch address";
+				isValidated = false;
+			}
+			
+			if ($('#branch-name').val() === "" || $('#branch-name').val().toUpperCase() === "N/A") {
+				msg = "Provide a valid card name";
+				isValidated = false;
+			}
+			
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+					if ($('#account-name').val() !== "")
+						msg = "Confirm branch update";
+					else
+						msg = "Confirm branch creation";
+					
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 1700
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+		
+    	const cancelOperation = () => {
+    		$('.configuration--add').removeClass('configuration--show');
+    		$('#branch-name').val('');
+    		$('#branch-address').val('');    		
+			$('#confirm-action').prop('checked', false);
+					
+    		if ($('.configuration--add .title').text().includes('UPDATE')) {
+    			const totalBranches = /*[[${branches.totalElements}]]*/ 'default';
+        		if (totalBranches > 0 ) {
+        			$('#branch-name').val('');
+        			$('#branch-address').val('');
+        			$('.custom-button--save').remove();
+        			$('.configuration--add .title').text('OPEN NEW BRANCH');
+        			$('.configuration--add .body__description').text('Provide name of the new branch you want to open.');
+        			
+        			const saveButtonContainer = document.querySelector('.body__buttons');
+        			const saveButton = `<button class="btn custom-button custom-button--save neo__outset mt-2 mb-4" onclick="saveBranch()">Create Branch</button>`;
+        			saveButtonContainer.insertAdjacentHTML('afterbegin', saveButton);
+        		}
+    		}
+    	};
+    	
+    	//TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(document).on('keydown', (event)=> {
+		    if(event.keyCode === 13){	    	
+		        event.preventDefault(); // Ensure it is only this code that runs
+		        saveBranch();
+		    }
+		});
+		
+		
+		$(".resource__search").on("keyup", function() {
+	        const value = $(this).val().toLowerCase();
+	        $(".configuration-branches .custom-card-container").filter(function()  {
+	               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+	        });
+	    });
+    </script>
+</body>
+</html>

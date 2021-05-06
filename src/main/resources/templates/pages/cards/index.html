@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('configuration Cards')"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header('SUPPORTED CARD TYPES', ${pageCount})"></div>               
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find a card...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>					
+					<button class="neo__outset btn resource__add"><i class="fas fa-plus"></i> New Card</button>
+               </div>
+               <div class="application__body">
+					<div class="configuration configuration-cards">
+						<div th:each="card : ${cards}" class="custom-card-container">
+							<div class="custom-card supported-card-type neo__outset" th:id="${card.cardTypeId}">
+								<div class="card__name" th:text="${card.cardTypeName}"></div>
+							</div>
+						</div>
+					</div>
+					<div class="void" th:unless="${cards.totalElements}">
+						<span class="void__text">NO CARDS CREATED</span>
+						<img class="void__image" alt="No Cards" th:src="@{/images/cards.svg}">
+					</div>				
+               </div>   
+               <div class="configuration--add">
+				    <div class="title">ADD NEW CARD</div>
+				    <div class="body">
+				    	<i class="fas fa-address-card fa-3x mb-5"></i>
+				    	<span class="body__description text--gray">Provide name of card type you want to use to register accounts.</span>
+    					<div class="body__imputs">
+    						<input class="custom-input form-control mt-2 mb-5" id="card-name" name="form-control" type="text" placeholder="eg. Voters ID" required>
+    					</div>				
+						<div class="w-100 mb-5">
+							<div class="confirmation-field">
+								<div class="custom__checkbox-container">
+			                      	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action">
+			                    </div>
+							</div>
+						</div>
+						<div class="body__buttons">
+							<button class="btn custom-button custom-button--save neo__outset mb-4" onclick="saveCard()">Add Card</button>
+						<button class="btn custom-button bg-secondary text--white neo__outset" onclick="cancelOperation()">Cancel</button>
+						</div>						
+					</div>
+				</div> 
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div>     
+           </div>                   
+       </main>       
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <script type="text/javascript">
+    
+    	$('.resource__add').on('click', ()=> {
+    		$('.configuration--add').toggleClass('configuration--show');
+    	});
+    	
+    	const saveCard = () => {
+			if(validateForm()) {
+				const cardName = $('#card-name').val().toUpperCase();
+				
+				const cardType = {
+					"cardTypeName": cardName
+				};
+		
+				$.ajax({
+					url: `${CONTEXT}api/v1/cards`,
+					method: `POST`,
+					contentType: `application/json`,
+					data: JSON.stringify(cardType),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: (card)=> {
+						swal({
+							type: 'success',
+							title: 'Success!',
+							text: 'New card added',
+							showConfirmButton: false,
+							timer: 1500
+						});
+						cancelOperation();
+						
+						const configurationCardsContainer = document.querySelector('.configuration');
+						const newconfigurationCard = `<div class="custom-card-container">
+														<div class="custom-card neo__outset" id="${card.cardTypeId}" >
+															<div class="card__name">${card.cardTypeName}</div>
+														</div>
+												  </div>`;
+						configurationCardsContainer.insertAdjacentHTML('beforeend', newconfigurationCard);
+						$('.void').length && $('.void').remove();
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;				
+			if ($('#card-name').val() === "" || $('#card-name').val().toUpperCase() === "N/A") {
+				msg = "Provide a valid card name";
+				isValidated = false;
+			}
+			
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+				
+					msg = "Confirm card creation";						
+					
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 1700
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+		
+    	const cancelOperation = () => {
+    		$('#card-name').val('');
+			$('#confirm-action').prop('checked', false);
+    		$('.configuration--add').removeClass('configuration--show');
+    	};
+    	
+    	//TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(document).on('keydown', (event)=> {
+		    if(event.keyCode === 13){	    	
+		        event.preventDefault(); // Ensure it is only this code that runs
+		        saveCard();
+		    }
+		});
+		
+		
+		$(".resource__search").on("keyup", function() {
+	        const value = $(this).val().toLowerCase();
+	        $(".configuration-cards .custom-card-container").filter(function()  {
+	               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+	        });
+	    });
+    </script>
+</body>
+</html>

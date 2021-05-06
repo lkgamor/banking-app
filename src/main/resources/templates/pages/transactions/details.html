@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('Transaction - ' + ${pageTitle})"></head>
+
+<body>
+	<section>
+		<aside th:replace="fragments/common :: app-sidebar"></aside>
+		<main>
+			<div class="main-content">
+				<div th:replace="fragments/common :: app-header('TRANSACTION DETAILS','')"></div>
+				<div class="existing-transaction" th:object="${transaction}">	
+					<a class="btn custom-button custom-button--return neo__outset" href="javascript:history.go(-1)"><i class="fas fa-arrow-circle-left mr-2"></i>Return</a>	
+					<div class="existing-transaction--left">
+						<fieldset class="neo__outset" th:classappend="${accountOwing} ? 'account__record account--owing':''">
+							<legend>Account Info</legend>
+							<div class="account__image neo__outset">
+								<img th:if="${accountImage}" alt="Account Picture" th:src="${'data:image/png;base64,'+ accountImage}">
+								<img th:unless="${accountImage}" alt="Account Picture" th:src="@{/images/account.svg}">
+							</div>
+							<div class="existing-transaction__info">
+								<div class="resource__status">
+									Account Status
+									<span class="resource__status--state active" th:if="${accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+										<span>Active</span>
+									</span>
+									<span class="resource__status--state inactive" th:unless="${accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Closed"></i></span>
+										<span>Closed</span>
+									</span>
+								</div>
+								<div class="existing-transaction__info--bottom">
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Account Name</span> 
+										<span class="new-resource__details--value" th:text="*{transactionAccountName}"></span>
+									</div>
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-money-check-alt fa-sm text-dark"></i> Account Number</span> 
+										<a class="new-resource__details--value" th:href="@{|/accounts/${transaction.transactionAccountNumber}|}" th:text="*{transactionAccountNumber}"></a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<fieldset class="neo__outset">
+							<legend>Issuer Info</legend>
+							<div class="account__image neo__outset">
+								<img alt="Employee Picture" th:src="@{/images/account.svg}">
+							</div>
+							<div class="existing-transaction__info">								
+								<div class="resource__status">
+									Working Status
+									<span class="resource__status--state active" th:if="${transaction.employee.employeeWorkingStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+										<span>Active</span>
+									</span>
+									<span class="resource__status--state terminated" th:unless="${transaction.employee.employeeWorkingStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Terminated"></i></span>
+										<span>Terminated</span>
+									</span>
+								</div>
+								<div class="existing-transaction__info--bottom">
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-user-tie fa-sm text-dark"></i> Employee Name</span> 
+										<a class="new-resource__details--value" th:href="@{|/employees/${transaction.employee.employeeId}|}" th:text="${#strings.capitalize(transaction.employee.employeeFirstName)} + ' ' + ${#strings.capitalize(transaction.employee.employeeLastName)}"></a>								
+									</div>
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-phone fa-sm text-dark"></i> Contact Number</span> 
+										<span class="new-resource__details--value" th:text="*{employee.employeeContact}"></span>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<div class="existing-transaction--right">
+						<fieldset class="neo__outset">
+							<legend>Transaction Info</legend>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Transaction Id</span> 
+								<span class="new-resource__details--value" th:text="*{transactionId}"></span>
+							</div>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Transaction Type</span> 
+								<span class="new-resource__details--value" th:text="*{transactionType}"></span>
+							</div>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title"><i class="fas fa-calendar fa-sm text-dark"></i> Date Issued</span> 
+								<span class="new-resource__details--value" th:text="*{#calendars.format(transactionDate,'EEE, d MMM yyyy HH:mm:ss')}"></span>
+							</div>
+							<div class="new-resource__details-field neo__outset">
+								<span class="new-resource__details--title"><i class="fas fa-money-check-alt fa-sm text-dark"></i> Transaction Amount</span> 
+								<span class="new-resource__details--value ghana-cedi-symbol" th:text="*{transactionAmount}"></span>
+							</div>
+							<div class="new-resource__details-field neo__outset">
+								<span class="new-resource__details--title"><i class="fas fa-coins fa-sm text-dark"></i> Account Balance</span> 
+								<span class="new-resource__details--value ghana-cedi-symbol" th:text="*{totalBalance}"></span>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+			</div>
+		</main>
+	</section>
+	<div th:replace="fragments/common :: required-scripts"></div>
+</body>
+</html>

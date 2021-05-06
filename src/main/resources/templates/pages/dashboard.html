@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/common :: head(Dashboard)"></head>
+    <body>
+        <section>
+            <aside th:replace="fragments/common :: app-sidebar"></aside>
+            <main>
+                <div class="main-content">
+                    <div th:replace="fragments/common :: app-header(DASHBOARD,'')"></div>                    
+                    <div class="dashboard__body">
+						<div class="dashboard__body--left">
+							<div class="dashboard__body--top">
+								<div class="neo__inset dashboard__period">
+									<input type="radio" name="radio-filter" class="btn dashboard__period-button" id="dashboard__period--all" value="all"/>
+									<input type="radio" name="radio-filter" class="btn dashboard__period-button" id="dashboard__period--year" value ="year"/>
+									<input type="radio" name="radio-filter" class="btn dashboard__period-button" id="dashboard__period--month" value ="month"/>
+									<input type="radio" name="radio-filter" class="btn dashboard__period-button" id="dashboard__period--week" value="week"/>
+									<input type="radio" name="radio-filter" class="btn dashboard__period-button" id="dashboard__period--day" value="day"/>
+								</div>
+								<span class="filter-state">
+									<i class="fas fa-filter mr-2"></i>Currently Displaying  
+									<kbd id="filter-value">ALL RECORDS</kbd>
+								</span>
+							</div>
+							<div class="dashboard__body--middle">
+								<a class="custom-card-container" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" th:href="@{/employees}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Employees</div>
+										<div class="card__total">
+									        <span id="total-employees">0</span>
+									    </div>
+									</div>
+								</a>
+								<a class="custom-card-container" th:href="@{/accounts}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Accounts</div>
+										<div class="card__total">
+									        <span id="total-accounts">0</span>
+									    </div>
+									</div>
+								</a>
+								<a class="custom-card-container" th:href="@{/transactions}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Transactions</div>
+										<div class="card__total">
+									        <span id="total-transactions">0</span>
+									    </div>
+									</div>
+								</a>
+								<a class="custom-card-container" th:href="@{/loans}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Loans</div>
+										<div class="card__total">
+									        <span id="total-loans">0</span>
+									    </div>
+									</div>
+								</a>
+								<a class="custom-card-container" th:href="@{/deposits}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Deposits</div>
+										<div class="card__total">
+									        <span id="total-deposits">0</span>
+									    </div>
+									</div>
+								</a>
+								<a class="custom-card-container" th:href="@{/withdrawals}">
+									<div class="dashboard__body--middle-card custom-card neo__outset">
+										<div class="card__name">Withdrawals</div>
+										<div class="card__total">
+									        <span id="total-withdrawals">0</span>
+									    </div>
+									</div>
+								</a>
+							</div>
+	                        <div class="dashboard__body--bottom loading-graph">
+	                            <div class="dashboard__graph" id="graph"></div>
+	                        </div>
+						</div>
+						<div class="dashboard__body--right">
+							<aside class="neo__inset aside--right">   
+			                    <div class="recent-transactions__header">
+			                       <span class="recent-transactions__header-title">  
+			                       		<i class="fas fa-coins fa-sm"></i> Recent Transactions
+			                       </span>
+			                    </div> 
+			                    <div class="recent-transactions__body">
+			                        <div class="recent-transactions__content">
+			                        	<!-- ALL FRIST 10 TRANSACTIONS GO HERE -->
+			                        </div>
+			                    </div>             
+			                </aside>
+						</div>
+					</div>
+					<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+                </div>                   
+            </main>       
+        </section>
+        
+		<div th:replace="fragments/common :: required-scripts"></div>
+  		<script type="module" th:src="@{js/custom/dashboard.js}"></script> 
+
+    </body>
+</html>

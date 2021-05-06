@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('Account - ' + ${pageTitle})"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content" th:object="${account}">
+               <div th:replace="fragments/common :: app-header(${accountName},'')"></div>               
+				<div class="new-resource__terminated" th:if="${account.accountNumber}" th:unless="${account.accountStatus}">
+					<span class="new-resource__text text-danger" th:text="'This account is no longer active with ' + ${companyName} + '. It was closed on ' + ${#calendars.format(account.accountDateClosed,'EEE, d MMM yyyy HH:mm:ss')}"></span>
+				</div>
+				<ul class="account__tabs nav nav-items" id="myTab" role="tablist">
+					<li class="nav-items__link active" id="profile-tab" data-toggle="tab"
+						data-target="#profile" role="tab" aria-controls="profile" aria-selected="false">
+						<span class="nav-link">Profile</span>
+					</li>
+					<li class="nav-items__link" id="transaction-tab" data-toggle="tab"
+						data-target="#transaction" role="tab" aria-controls="transaction" aria-selected="true">
+						<span class="nav-link">Transaction History</span>
+					</li>
+				</ul>
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade active in" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+						<div class="account">
+							<!-- <a class="btn custom-button custom-button--return neo__outset" href="javascript:history.go(-1)"><i class="fas fa-arrow-circle-left mr-2"></i>Return</a> -->
+							<div class="account__details account__details--left">
+								<div class="account__details--left--top">
+									<div class="account__image neo__outset">
+										<button class="account__image--upload" onclick="selectAccountImage()">
+											<i class="fas fa-camera" title="Set account image"></i>
+										</button>
+										<img th:if="${account.accountImage}" alt="Account Picture" th:src="*{'data:image/png;base64,'+ accountImage64}" id="account-image">
+										<img th:unless="${account.accountImage}" alt="Account Picture" th:src="@{/images/account.svg}" id="account-image">
+									</div>
+									<div th:if="${account.accountNumber}">
+										<div class="account__verification account__verification--signed" th:if="${account.accountSignature}">Account Signed <i class="fas fa-check-circle fa-sm"></i></div>
+										<div class="account__verification account__verification--unsigned" th:unless="${account.accountSignature}"  onclick="selectAccountSignature()">Account Not Signed <i class="fas fa-exclamation-triangle fa-sm"></i></div>
+									</div>
+									<div th:unless="${account.accountNumber}">
+										<div class="account__verification account__verification--alert" onclick="selectAccountSignature()">Upload Signature <i class="fas fa-cloud-upload-alt fa-sm"></i></div>
+									</div>
+								</div>
+								<div class="account__details--left--middle">						
+									<div class="custom-card-container">
+										<div class="custom-card neo__outset text-center">
+											<span class="account-balance__title">Total Account Balance</span>
+		    								<span class="account-balance__value ghana-cedi-symbol" th:if="${account.accountNumber}" th:text="*{accountBalance}">0.00</span>
+		    								<span class="account-balance__value ghana-cedi-symbol" th:unless="${account.accountNumber}">0.00</span>
+										</div>
+									</div>
+								</div>
+								<div class="account__details--left--bottom">										
+									<fieldset class="w-100 neo__outset">
+										<legend>Next Of Kin</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Name of Kin</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountKinName}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" id="account-kin-name" name="account-kin-name" type="text" placeholder="eg. John Doe" required>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountKinName}" id="account-kin-name" name="account-kin-name" type="text" placeholder="eg. John Doe" required>
+											</div>
+										<div class="new-resource__details-field">
+											<span class="new-resource__details--title"><i class="fas fa-phone fa-sm text-dark"></i> Phone Number</span> 
+											<input class="custom-input form-control" th:if="${account.accountNumber}"  th:field="*{accountKinContact}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" id="account-kin-contact" name="account-kin-contact" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]*" inputmode="numeric" required>
+											<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountKinContact}" id="account-kin-contact" name="account-kin-contact" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]*" inputmode="numeric" required>
+										</div>
+									</fieldset>
+								</div>
+							</div>
+			
+							<div class="account__details account__details--right tab-content">	
+								<div class="account__details--inner tab-pane active" id="profile-just" role="tabpanel" aria-labelledby="profile-tab-just">
+									<div class="account__details--inner--left">
+										<fieldset class="neo__outset">
+											<input hidden="hidden" th:field="*{accountNumber}">	
+											<legend>User Details</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Full Name</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountName}" id="account-name" name="account-name" type="text" placeholder="eg. John Doe" disabled>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountName}" id="account-name" name="account-name" type="text" placeholder="eg. John Doe" required>
+											</div>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-venus-mars fa-sm text-dark"></i> Gender</span> 
+												<select class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountUserGender}" id="account-user-gender" disabled>
+													<option selected value="">Select gender</option>
+													<option th:each="type : ${genderTypes}" th:value="${type}" th:text="${type}"></option>
+												</select>
+												<select class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountUserGender}" id="account-user-gender">
+													<option selected value="">Select gender</option>
+													<option th:each="type : ${genderTypes}" th:value="${type}" th:text="${type}"></option>
+												</select>
+											</div>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-walking fa-sm text-dark"></i> Occupation</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountOccupation}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" id="account-occupation" name="account-occupation" type="text" placeholder="Student" required>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountOccupation}" id="account-occupation" name="account-occupation" type="text" placeholder="Student" required>
+											</div>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-calendar fa-sm text-dark"></i> Date of Birth</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountUserDOB}" id="account-dob" name="form-control" type="date" disabled>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountUserDOB}" id="account-dob" name="form-control" type="date" required>
+											</div>
+										</fieldset>
+										<fieldset class="neo__outset">
+											<legend>Contact Info</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-phone fa-sm text-dark"></i> Phone Number</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}"  th:field="*{accountContact}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" id="account-contact" name="account-contact" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]*" inputmode="numeric" required>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountContact}" id="account-contact" name="account-contact" type="tel" placeholder="02xxxxxxxx" pattern="[0-9]*" inputmode="numeric" required>
+											</div>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-envelope fa-sm text-dark"></i> Email</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountEmail}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" id="account-email" name="form-control" type="email" placeholder="eg. johndoe01@hotmail.com">
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountEmail}" id="account-email" name="form-control" type="email" placeholder="eg. johndoe01@hotmail.com">
+											</div>
+										</fieldset>
+									</div>
+									<div class="account__details--inner--right">				
+										<fieldset class="neo__outset">
+											<legend>Card Info</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-id-card-alt fa-sm text-dark"></i> Card type</span> 
+												<select class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{card.cardTypeId}" id="account-card-type" disabled>
+													<option selected value="">Select identification card</option>
+													<option th:each="card : ${cards}" th:value="${card.cardTypeId}" th:text="${card.cardTypeName}"></option>
+												</select>
+												<select class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{card.cardTypeId}" id="account-card-type" required>
+													<option selected value="">Select identification card</option>
+													<option th:each="card : ${cards}" th:value="${card.cardTypeId}" th:text="${card.cardTypeName}"></option>
+												</select>
+											</div>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-id-card-alt fa-sm text-dark"></i> Card Number</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{accountIDNumber}" id="account-card-number" name="account-card-number" type="text" placeholder="eg. CD-09988373-02" disabled>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{accountIDNumber}" id="account-card-number" name="account-card-number" type="text" placeholder="eg. CD-09988373-02" required>
+											</div>
+										</fieldset>
+										<fieldset class="neo__outset">
+											<legend>Branch Details</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-warehouse fa-sm text-dark"></i> Branch</span> 
+												<select class="custom-input form-control" th:if="${account.accountNumber}" th:field="*{branch.branchId}" id="account-branch" disabled>
+													<option selected value="">Choose branch</option>
+													<option th:each="branch: ${branches}" th:value="${branch.branchId}" th:text="${branch.branchName}"></option>
+												</select>
+												<select class="custom-input form-control" th:unless="${account.accountNumber}" th:field="*{branch.branchId}" id="account-branch" required>
+													<option selected value="">Choose branch</option>
+													<option th:each="branch: ${branches}" th:value="${branch.branchId}" th:text="${branch.branchName}"></option>
+												</select>
+											</div>
+										</fieldset>
+										<fieldset class="neo__outset">
+											<legend>Staff In Charge</legend>
+											<div class="new-resource__details-field">
+												<span class="new-resource__details--title"><i class="fas fa-user-tie fa-sm text-dark mr-2"></i>Issued by</span> 
+												<input class="custom-input form-control" th:if="${account.accountNumber}" th:value="${#strings.capitalize(account.employee.employeeFirstName)} + ' ' + ${#strings.capitalize(account.employee.employeeLastName)}" name="form-control" type="text" placeholder="eg. Jane Doe" required disabled>
+												<input class="custom-input form-control" th:unless="${account.accountNumber}" th:value="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}" name="form-control" type="text" placeholder="eg. Jane Doe" required disabled>
+											</div>
+										</fieldset>
+										<fieldset class="py-0">
+											<div class="confirmation-field">
+												<div class="custom__checkbox-container">
+				                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action" th:if="${account.accountNumber}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}">
+				                                	<input type="checkbox" class="custom__checkbox" id="confirm-action" aria-label="Confirm Action" th:unless="${account.accountNumber}">
+				                                </div>
+											</div>
+										</fieldset>	
+									</div>	
+								</div>			
+							</div>
+							
+							<div class="new-resource__buttons">						
+								<button class="btn custom-button custom-button--terminate neo__outset" th:if="${account.accountNumber}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" onclick="closeAccount()">Close Account</button>
+								<button class="btn custom-button custom-button--update neo__outset" th:if="${account.accountNumber}" th:attrappend="disabled=${account.accountStatus?'':'disabled'}" onclick="updateAccountDetails()">Update Account</button>
+								<button class="btn custom-button custom-button--cancel neo__outset" th:unless="${account.accountNumber}" onclick="cancelCreateAccount()">Cancel</button>
+								<button class="btn custom-button custom-button--save neo__outset" th:unless="${account.accountNumber}" onclick="createUserAccount()">Create Account</button>
+							</div>
+								
+							<input type="file" class="image--upload" id="upload-image" name="Account Image">
+							<input type="file" class="image--upload" id="upload-signature" name="Account Signature">
+							
+						</div>
+					</div>
+					
+					<div class="tab-pane fade" id="transaction" role="tabpanel" aria-labelledby="transaction-tab">
+						<div class="account__details--inner">
+							<div class="account__transactions" th:if="${account.transactions} AND ${#lists.size(account.transactions) &gt; 0}">
+								<div class="account__transactions-body">
+								
+               						<input th:if="${account.accountNumber}" class="neo__inset form-control resource__search w-40" type="text" th:placeholder="|Find ${account.accountName}'s transactions...|">
+               						<input th:unless="${account.accountNumber}" class="neo__inset form-control resource__search w-40" type="text" th:placeholder="Find a transaction...">
+								
+				               		<table class="application__table table table-striped table-sm text-center">
+										<thead class="application__table--head text-left">
+											<tr>
+												<th class="t-head">Transaction ID</th>
+												<th class="t-head">Type</th>
+												<th class="t-head">Amount</th>
+												<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">Issued By</th>
+												<th class="t-head">Branch</th>
+												<th class="t-head">Date Issued</th>
+											</tr>
+										</thead>
+										<tbody class="application__table--body text-left">
+											<tr class="transaction__record" th:each="transaction : ${account.transactions}" th:id="${transaction.transactionId}">
+												<td class="transaction__number">
+													<a th:href="@{|/${#strings.toLowerCase(transaction.transactionType) + 's'}/${transaction.transactionId}|}" th:text="'#' + ${transaction.transactionId} ?: 'N/A'" th:title="'#' + ${transaction.transactionId} ?: 'N/A'"></a>
+												</td>
+												<td class="transaction__type">
+													<a th:href="@{|/${#strings.toLowerCase(transaction.transactionType) + 's'}|}" th:text="${transaction.transactionType} ?: 'N/A'" th:title="${transaction.transactionType} ?: 'N/A'"></a>
+												</td>									
+												<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(transaction.transactionAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(transaction.transactionAmount)} ?: 'N/A'"></td>
+												<td class="transaction__issuer" th:text="${#strings.capitalize(transaction.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+												<td class="transaction__branch" th:text="${#strings.capitalize(transaction.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.branch.branchName)} ?: 'N/A'"></td>
+												<td class="transaction__date" th:text="${#calendars.format(transaction.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(transaction.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div> 
+								
+								<div class="account__transactions-graph">
+									<div id="transactions-graph"></div>
+								</div>
+								
+							</div>
+							<div class="void" th:unless="${account.transactions} AND ${#lists.size(account.transactions) &gt; 0}">
+								<span class="void__text">NO TRANSACTION HISTORY</span>
+								<img class="void__image" alt="No Transactions" th:src="@{/images/transactions.svg}">
+							</div>
+						</div>	
+					</div>
+				</div>
+				
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+			</div>                   
+       </main>       
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <script type="text/javascript" th:inline="javascript">
+    	
+    	const account = /*[[${account}]]*/ 'default';
+   		const transactions = account.transactions;
+		const flatPickrConfig = {
+		    altFormat: "F j, Y",
+		    dateFormat: "Y-m-d",
+		    maxDate: "today"
+		};
+		
+		if(account.accountNumber) {
+			flatPickrConfig.altInput = false;
+			flatPickrConfig.defaultDate = new Array(account.accountUserDOB);
+			$("#account-dob").flatpickr(flatPickrConfig);
+		} else {
+			flatPickrConfig.altInput = true;
+			$("#account-dob").flatpickr(flatPickrConfig);			
+		}
+		
+    	const _URL = window.URL || window.webkitURL;
+    	let _tempAccountImage = null, _tempAccountSignature = null;
+    	
+    	const selectAccountImage = () => {
+    		 $("#upload-image").click();
+    	};
+    	    	
+    	const selectAccountSignature = () => {
+    		 $("#upload-signature").click();
+    	};
+    	
+    	$('#upload-image').change(function() {
+    		$('.account__image img').remove();
+    		const image = this.files[0];
+			const img = new Image();
+    		const accountImageContainer = document.querySelector('.account__image');
+    		
+		    if (image) {		        
+		        const objectUrl = _URL.createObjectURL(image);		        
+		        img.onload = function () {
+		        	const width = this.width;
+		        	const height = this.height;
+			        accountImageContainer.append(this);
+		            _URL.revokeObjectURL(objectUrl);
+		        };
+		        img.src = objectUrl;
+		        
+		        const reader = new FileReader();
+		       	reader.readAsArrayBuffer(image);
+		       	reader.onload = function (evt) {
+		        
+		        	const imageType = image.type;
+		        	const imageSize = Math.round(image.size / 1024);
+		       		const imageByte = new Uint8Array(evt.target.result);
+		       		
+		       		if (imageSize <= 1024) {
+		       		
+			       		if (imageType === `image/png` || imageType === `image/svg` || imageType === `image/jpeg`) {
+		       				_tempAccountImage = Object.values(imageByte);	
+			       		} else {
+					       	swal({type: 'warning', 
+					       		  title: 'Invalid Image type', 
+					       		  text: "Please upload an image of type 'png', 'jpeg' or 'svg'", 
+					       		  showConfirmButton: true, 
+					       		  confirmButtonText: 'Ok'
+					       		});
+			    			setDefaultImage(img, accountImageContainer);
+			    		}
+		       		} else {
+		       		
+						swal({type: 'warning', 
+							title: 'Image size too large', 
+							text: "Maximun upload size is 1Mb'", 
+							showConfirmButton: true, 
+							confirmButtonText: 'Ok'
+						});		        	
+			    		setDefaultImage(img, accountImageContainer);
+		       		}
+		       	};
+		    } else {
+		    	setDefaultImage(img, accountImageContainer);
+		    }
+		});
+		
+		$('#upload-signature').change(function() {
+			const signature = this.files[0];
+		    if (signature) {
+		       	const reader = new FileReader();
+		       	reader.readAsArrayBuffer(signature);
+		       	reader.onload = function (evt) { 
+		       	 
+		        	const signatureType = signature.type;
+		        	const signatureSize = Math.round(signature.size / 1024);
+		       		const signatureByte = new Uint8Array(evt.target.result); 
+		       		
+		       		if (signatureSize <= 1024) {
+		       		
+			       		if (signatureType === `image/png` || signatureType === `image/svg` || signatureType === `image/jpeg`) {
+							$('.account__verification--alert').length && $('.account__verification--alert').addClass('account__verification--found');  
+							$('.account__verification--unsigned').length && $('.account__verification--unsigned').addClass('account__verification--found');  
+		       				_tempAccountSignature = Object.values(signatureByte);		
+			       		} else {
+					       	swal({type: 'warning', 
+					       		  title: 'Invalid Signature type', 
+					       		  text: "Please upload a signature of type 'png', 'jpeg' or 'svg'", 
+					       		  showConfirmButton: true, 
+					       		  confirmButtonText: 'Ok'
+					       	});				       		
+			       		}
+		       		} else {
+						swal({type: 'warning', 
+			       			  title: 'Signature size too large', 
+			       			  text: "Maximun upload size is 1Mb'", 
+			       			  showConfirmButton: true, 
+			       			  confirmButtonText: 'Ok'
+			       		});	
+		       		}
+		       	};
+		    } else {
+				$('.account__verification--alert').length && $('.account__verification--alert').removeClass('account__verification--found');  
+				$('.account__verification--unsigned').length && $('.account__verification--unsigned').removeClass('account__verification--found');
+		    }
+		});
+		
+    	const createUserAccount = () => {
+			if(validateForm()) {
+				const accountName = $('#account-name').val().toUpperCase();
+				const accountKinName = $('#account-kin-name').val().toUpperCase();
+				const accountUserGender = $('#account-user-gender').val();
+				const accountOccupation = $('#account-occupation').val();
+				const accountUserDOB = $('#account-dob').val();
+				const accountContact = $('#account-contact').val();
+				const accountKinContact = $('#account-kin-contact').val();
+				const accountEmail = $('#account-email').val();
+				const accountIDType = $('#account-card-type').val();
+				const accountIDNumber = $('#account-card-number').val().toUpperCase();		
+			
+				const account = {
+					"accountName": accountName,
+					"accountKinName": accountKinName,
+					"accountEmail": accountEmail,
+					"accountUserDOB": accountDOB,
+					"accountContact": accountContact,
+					"accountKinContact": accountKinContact,
+					"accountIDType": accountIDType,
+					"accountUserGender": accountUserGender,
+					"accountIDNumber": accountIDNumber,
+					"accountOccupation": accountOccupation,
+					"accountSignature": _tempAccountSignature,
+					"accountImage": _tempAccountImage
+				};
+		        
+		        $.ajax({
+					url: `${CONTEXT}api/v1/accounts`,
+					method: `POST`,
+					contentType: `application/json`,
+					data: JSON.stringify(account),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--save').attr('disabled',true);
+					},
+					success: (response)=> {
+						swal({
+							type: 'success',
+							title: 'Processed!',
+							text: `Account has been successfully opened with number ${response.accountNumber}`,
+							showConfirmButton: true,
+							showCancelButton: false,
+							confirmButtonText: 'Done'
+						});
+						$('.confirm').on('click', ()=> {
+							window.location.href = `${CONTEXT}accounts`;
+						});
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--save').attr('disabled',false);
+					}
+				});
+			}
+		};
+		
+		const updateAccountDetails = () => {
+			if(validateForm()) {
+				const accountNumber = $('#accountNumber').val();
+				const accountOccupation = $('#account-occupation').val();
+				const accountContact = $('#account-contact').val();
+				const accountEmail = $('#account-email').val();			
+				const accountKinName = $('#account-kin-name').val().toUpperCase();
+				const accountKinContact = $('#account-kin-contact').val();
+			
+				const account = {
+					"accountEmail": accountEmail,
+					"accountKinName": accountKinName,
+					"accountContact": accountContact,
+					"accountKinContact": accountKinContact,
+					"accountOccupation": accountOccupation,
+					"accountSignature": _tempAccountSignature,
+					"accountImage": _tempAccountImage
+				};
+				        
+				$.ajax({
+					url: `${CONTEXT}api/v1/accounts/${accountNumber}`,
+					method: `PUT`,
+					contentType: `application/json`,
+					data: JSON.stringify(account),
+					beforeSend: ()=> {
+						NProgress.start();		
+						$('.custom-button--update').attr('disabled',true);
+					},
+					success: (response)=> {
+						swal({
+							type: 'success',
+							title: 'Processed!',
+							text: `Account has been successfully updated`,
+							showConfirmButton: true,
+							showCancelButton: false,
+							confirmButtonText: 'Done'
+						});
+						$('.confirm').on('click', ()=> {
+							$('#confirm-action').prop('checked', false);
+						});
+					},
+					error: (jXHR, statusText, statusCode)=> {
+						swal({
+							type: 'error',
+							title: 'Sorry',
+							text: jXHR.responseJSON.message,
+							showConfirmButton: true,
+							confirmButtonText: 'OK'
+						});
+						$('#confirm-action').prop('checked', false);
+					},
+					complete: ()=> {
+						NProgress.done();
+						NProgress.remove();
+						$('.custom-button--update').attr('disabled',false);
+					}
+				});		        
+			}
+		};
+		
+		const closeAccount = () => {		
+			if($('#confirm-action').is(":checked")) {			
+				const accountName = $('#account-name').val().toUpperCase();
+				swal({
+					type: 'warning',
+					title: `Close ${accountName}!`,
+					text: `You're about to close ${accountName}'s account. Cancel if this was not planned. Proceed otherwise`,
+					showConfirmButton: true,
+					showCancelButton: true,
+					confirmButtonText: 'Proceed!'
+				});
+				
+				$('.confirm').on('click', ()=> {	
+					const accountNumber = $('#accountNumber').val();	
+					$.ajax({
+						url: `${CONTEXT}api/v1/accounts/${accountNumber}`,
+						method: `DELETE`,
+						beforeSend: ()=> {
+							NProgress.start();	
+							$('.custom-button--terminate').attr('disabled',true);	
+						},
+						success: ()=> {	
+							swal({
+								type: 'success',
+								title: 'Success',
+								text: `${accountName}'s account has been closed`,
+								showConfirmButton: true,
+								showCancelButton: false,
+								confirmButtonText: 'Done'
+							});
+		
+							$('.confirm').on('click', ()=> {
+								window.location.href = `${CONTEXT}accounts`;
+							});	
+						},
+						error: (jXHR, statusText, statusCode)=> {
+							swal({
+								type: 'error',
+								title: 'Sorry',
+								text: jXHR.responseJSON.message,
+								showConfirmButton: true,
+								showCancelButton: false,
+								confirmButtonText: 'Ok'
+							});
+							$('#confirm-action').prop('checked', false);
+						},
+						complete: ()=> {
+							NProgress.done();
+							NProgress.remove();
+							$('.custom-button--terminate').attr('disabled',false);
+						}
+					}); 
+				});
+				
+				$('.cancel').on('click', ()=> {					
+					$('#confirm-action').prop('checked', false);
+				});
+				
+			} else {
+				showAccountProfileTab();
+    			
+				$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+				setTimeout(()=> {
+					$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+				},1000);
+				
+				swal({
+				type: 'warning',
+					title: 'Warning',
+					text: "Confirm account closure",
+					showConfirmButton: false,
+					timer: 1700
+				});
+			}		
+		};
+		
+		const validateForm = () => {
+			
+			let isValidated = true, isConfirmed = false, msg;	
+			
+			if($('#account-branch').val() === "") {
+				$("#account-branch").addClass('border border-danger');
+				msg = "Select branch to associate this account to";
+				isValidated = false;
+			} else {
+				$("#account-branch").removeClass("border-danger").addClass('border border-success');
+			}
+			
+			if($('#account-card-number').val() === "") {
+				$("#account-card-number").addClass('border border-danger');
+				msg = "Provide the identification card number";
+				isValidated = false;
+			} else {
+				$("#account-card-number").removeClass("border-danger").addClass('border border-success');
+			}
+			
+			if($('#account-card-type').val() === "") {
+				$("#account-card-type").addClass('border border-danger');
+				msg = "Select the identification card type";
+				isValidated = false;
+			} else {
+				$("#account-card-type").removeClass("border-danger").addClass('border border-success');
+			}
+	
+			if ($("#account-email").val() === "") {
+                $("#account-email").removeClass('border-danger').addClass('border border-success');
+            } else {
+            	const email = $("#account-email").val();
+                if (email.length > 10) {
+                      const validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                      validEmail.test(email.toLowerCase());
+                      if (validEmail) {
+                             $("#account-email").removeClass('border-danger').addClass('border border-success');
+                      } else {
+                             $("#account-email").removeClass('border-success').addClass('border border-danger');
+                             isValidated = false;
+                             msg = "Invalid Email-Address";
+                      }
+                } else {
+                      $("#account-email").removeClass('border-success').addClass('border border-danger');
+                      isValidated = false;
+                      msg = "Email-Address must be more than 10 characters";
+                }
+            } 
+			
+			validatePhoneNumber = phoneInput => {
+				if (phoneInput.val() === "") {
+					phoneInput.removeClass("border-sucess").addClass('border border-danger');
+					msg = "Provide contact number";
+					isValidated = false;
+				} else {
+					const number = phoneInput.val();
+					const thirdPhoneNumberValue = `${number}`.toString().charAt(2);
+					if (number.length === 10) {
+						if (number.toString().substring(0, 2) === '02' || number.toString().substring(0, 2) === '05') {
+							if (thirdPhoneNumberValue === '0' || thirdPhoneNumberValue === '4' || thirdPhoneNumberValue === '5' ||
+								thirdPhoneNumberValue === '6' || thirdPhoneNumberValue === '7' || thirdPhoneNumberValue === '9') {
+								phoneInput.removeClass("border-danger").addClass('border border-success');
+							} else {
+								isValidated = false;
+								msg = `Phone number invalid.`;
+								phoneInput.removeClass("border-sucess").addClass('border border-danger');
+							}
+						} else {
+							isValidated = false;
+							msg = `Phone number must start with 02 or 05.`;
+							phoneInput.removeClass("border-sucess").addClass('border border-danger');
+						}
+					} else {
+						isValidated = false;
+						msg = `Phone number must be 10 numbers.`;
+						phoneInput.removeClass("border-sucess").addClass('border border-danger');
+					}
+				}
+			};
+			
+			validatePhoneNumber($('#account-contact'));
+			
+			validatePhoneNumber($('#account-kin-contact'));
+					
+			if($('#account-kin-name').val() === "") {
+				$("#account-kin-name").addClass('border border-danger');
+				msg = "Provide name of Kin";
+				isValidated = false;
+			} else {
+				
+				if($('#account-kin-name').val().length < 3 || $('#account-kin-name').val().length > 60) {
+					$("#account-kin-name").addClass('border border-danger');
+					msg = "Kin name must be between 3 to 100 characters";
+					isValidated = false;
+				} else {
+					$("#account-kin-name").removeClass("border-danger").addClass("border border-success");			
+				}
+			}
+			
+			if($('#account-dob').val() === ""){
+				$(".custom-input.form-control.input").addClass('border border-danger');
+				msg = "Provide the date of birth of this account holder";
+				isValidated = false;		
+			} else {
+				$(".custom-input.form-control.input").removeClass("border-danger border-warning").addClass('border border-success');
+			}  
+			
+			if($('#account-occupation').val() === ""){
+				$("#account-occupation").addClass('border border-danger');
+				msg = "Provide the occupation of this account holder";
+				isValidated = false;	
+			} else {
+				$("#account-occupation").removeClass("border-danger border-warning").addClass('border border-success');
+			}     
+			
+			if($('#account-user-gender').val() === ""){
+				$("#account-user-gender").addClass('border border-danger');
+				msg = "Specify the gender of this account holder";
+				isValidated = false;
+			} else {
+				$("#account-user-gender").removeClass("border-danger").addClass('border border-success');
+			}
+			
+			if($('#account-name').val() === "") {
+				$("#account-name").addClass('border border-danger');
+				msg = "Provide an account name";
+				isValidated = false;
+			} else {
+				
+				if($('#account-name').val().length < 3 || $('#account-name').val().length > 60) {
+					$("#account-name").addClass('border border-danger');
+					msg = "Account name must be between 3 to 100 characters";
+					isValidated = false;
+				} else {
+					$("#account-name").removeClass("border-danger").addClass("border border-success");			
+				}
+			}
+			
+			//IF ALL REQUIRED FIELDS ARE VALIDATED
+			if(isValidated) {
+
+				if($('#confirm-action').is(":checked")) {
+					isConfirmed = true;
+				} else {
+					if ($('#account-name').val() !== "")
+						msg = "Confirm account update";
+					else
+						msg = "Confirm account creation";
+					
+					$('.custom__checkbox-container').addClass('custom__checkbox-container--shake');
+					setTimeout(()=> {
+						$('.custom__checkbox-container').removeClass('custom__checkbox-container--shake');
+					},1000);
+					
+					swal({
+						type: 'warning',
+						title: 'Warning',
+						text: msg,
+						showConfirmButton: false,
+						timer: 1700
+					});
+				}
+				
+				if(isConfirmed) {
+					return isValidated; 
+				}
+				
+			} else {
+				swal({
+					type: 'warning',
+					title: 'Warning',
+					text: msg,
+					showConfirmButton: false,
+					timer: 1500
+				});
+			}
+		};
+		
+		const cancelCreateAccount = () => {
+			$('#account-name').val('');
+			$('#account-user-gender').val('');
+			$('#account-occupation').val('');
+			$('#account-dob').val('');
+			$('#account-contact').val('');
+			$('#account-email').val('');
+			$('#account-card-type').val('');
+			$('#account-card-number').val('');
+			$('#account-branch').val('');
+			$('#confirm-action').prop('checked', false);
+		};
+		
+		const showAccountProfileTab = () => {
+    		$('.nav-tabs li:nth-child(1) a').tab('show');
+    		$('.nav-tabs li:nth-child(2) a').tab('hide');
+		};
+		
+		const plotTransactionGraph = (loansLength, depositsLength, withdrawalsLength) => {
+			const options = {
+		          series: [loansLength, depositsLength, withdrawalsLength],
+		          chart: {
+			          width: 300,
+			          height: 300,
+			          type: 'pie',
+			      },
+		          labels: ['Loans', 'Deposits', 'Withdrawals'],
+		          responsive: [{
+		            options: {
+		              chart: {
+		                width: 300
+		              },
+		              legend: {
+		                position: 'bottom'
+		              }
+		            }
+		       }]
+	        };
+	
+	        const chart = new ApexCharts(document.querySelector("#transactions-graph"), options);
+	        chart.render();
+		};
+    	
+    	const fetchAccountTransactions = () => {        		
+    		const loans = transactions.filter(transaction => transaction.transactionType.includes('LOAN'));
+    		const deposits = transactions.filter(transaction => transaction.transactionType.includes('DEPOSIT'));
+    		const withdrawals = transactions.filter(transaction => transaction.transactionType.includes('WITHDRAWAL'));
+    		plotTransactionGraph(loans.length, deposits.length, withdrawals.length);
+    	};
+    	    	
+    	const setDefaultImage = (img, accountImageContainer) => {
+    		img.src = `${CONTEXT}images/account.svg`;
+		    accountImageContainer.append(img);
+    	};
+    	
+    	if(transactions !== null && transactions.length > 0) fetchAccountTransactions();
+		
+		$('#account-name').on('input', function (event) {
+	        this.value = this.value.replace(/[^a-zA-Z- ]/g, '');
+	    });
+	    
+	    $('#account-occupation').on('input', function (event) {
+	        this.value = this.value.replace(/[^a-zA-Z-. ]/g, '');
+	    });
+	    
+	    $('#account-contact').on('input', function (event) {
+	        this.value = this.value.replace(/[^0-9]/g, '');
+	    });
+	    
+	    $('#account-card-number').on('input', function (event) {
+	        this.value = this.value.replace(/[^0-9a-zA-Z-]/g, '');
+	    });
+	    
+	    //TRIGGER FIND FINCTION WHEN USER CLICKS ON ENTER KEY
+		$(document).on('keydown', (event)=> {
+		    if(event.keyCode === 13){
+		    	if($('.custom-button--save').length) {		    	
+		        	event.preventDefault(); // Ensure it is only this code that runs
+		        	createUserAccount();
+		    	} else if($('.custom-button--update').length) {
+		    		event.preventDefault(); // Ensure it is only this code that runs
+		        	updateAccountDetails();
+		    	}
+		    	showAccountProfileTab();
+		    }
+		});
+		
+		
+		$(".resource__search").on("keyup", function() {
+	        const value = $(this).val().toLowerCase();
+	        $(".application__table--body tr").filter(function()  {
+	               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+	        });
+	    });
+    </script>
+</body>
+</html>

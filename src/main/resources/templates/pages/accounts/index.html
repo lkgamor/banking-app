@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(Accounts)"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header('CUSTOMER ACCOUNTS', ${pageCount})"></div>
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find an account...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>		
+               		<div th:replace="fragments/common :: tables-filter(true)"></div>					
+					<a class="neo__outset btn resource__add" th:href="@{/accounts/add}"><i class="fas fa-plus"></i> New Account</a>
+               </div>
+               <div class="application__body">
+               		<table class="application__table table table-striped table-sm text-center">
+						<thead class="application__table--head text-left">
+							<tr>
+								<th class="t-head">Account No_</th>
+								<th class="t-head">Account Name</th>
+								<th class="t-head">Email</th>
+								<th class="t-head">Phone</th>
+								<th class="t-head">ID Type</th>
+								<th class="t-head">ID Number</th>
+								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">Created By</th>
+								<th class="t-head">Branch</th>
+								<th class="t-head">Status</th>
+							</tr>
+						</thead>
+						<tbody class="application__table--body text-left">
+							<tr class="account__record" th:each="account : ${accounts}" th:id="account + ${account.content.accountNumber}" th:classappend="${account.content.accountOwing} ? 'account--owing':''">									
+								<td class="account__number">
+									<a th:href="@{|/accounts/${account.content.accountNumber}|}" th:text="'#' + ${#strings.capitalize(account.content.accountNumber)}"></a>
+									<a th:href="@{/loans}" th:if="${account.content.accountOwing}"><i class="fas fa-flag" data-toggle="tooltip" title="Taken Loan"></i></a>
+								</td>
+								<td class="account__name" th:text="${#strings.toUpperCase(account.content.accountName)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.accountName)} ?: 'N/A'"></td>
+								<td class="account__email" th:text="${account.content.accountEmail} ?: 'N/A'" th:title="${account.content.accountEmail} ?: 'N/A'"></td>						
+								<td class="account__contact" th:title="${#strings.capitalize(account.content.accountContact)} ?: 'N/A'">
+									<div class="d-flex">
+										<span th:text="${#strings.capitalize(account.content.accountContact)} ?: 'N/A'" ></span>
+										<i class="fas fa-phone ml-1"></i>
+									</div>
+								</td>
+								<td class="account__idtype" th:text="${#strings.capitalize(account.content.card.cardTypeName)} ?: 'N/A'" th:title="${#strings.capitalize(account.content.card.cardTypeName)} ?: 'N/A'"></td>
+								<td class="account__idnumber" th:text="${#strings.toUpperCase(account.content.accountIDNumber)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.accountIDNumber)} ?: 'N/A'"></td>
+								<td class="account__issuer" th:text="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}"></td>
+								<td class="account__branch" th:text="${#strings.capitalize(account.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(account.content.branch.branchName)} ?: 'N/A'"></td>
+								<td	class="resource__status">
+									<span class="resource__status--state active" th:if="${account.content.accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+										<span>Active</span>
+									</span>
+									<span class="resource__status--state inactive" th:unless="${account.content.accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Closed"></i></span>
+										<span>Closed</span>
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="void" th:unless="${accounts.metadata.totalElements}">
+						<span class="void__text">NO ACCOUNTS OPENED</span>
+						<img class="void__image" alt="No Accounts" th:src="@{/images/accounts.svg}">
+					</div>
+					
+					<nav class="pagination-nav" aria-label="" th:if="${accounts.metadata.totalElements}">
+						<ul class="pagination" th:with="total = ${accounts.metadata.totalPages}">
+							 <li th:class="${accounts.metadata.number == 0} ? 'disabled' : ''">
+					            <a th:if="${accounts.metadata.number == 0}" href="javascript:void(0);">Previous</a>
+					            <a th:unless="${accounts.metadata.number == 0}" th:href="@{${'/accounts'}(page=${accounts.metadata.number-1},size=${accounts.metadata.size})}">Previous</a>
+					        </li>					
+					        <li th:if="${accounts.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, 2)}" th:class="${accounts.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${accounts.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${accounts.metadata.number == pageNo}" th:href="@{${'/accounts'}(page=${pageNo},size=${accounts.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:unless="${accounts.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, accounts.metadata.totalPages - 1)}" th:class="${accounts.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${accounts.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${accounts.metadata.number == pageNo}" th:href="@{${'/accounts'}(page=${pageNo},size=${accounts.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:class="${accounts.metadata.number + 1} == ${accounts.metadata.totalPages} ? 'disabled' : ''">
+					           <a th:if="${accounts.metadata.number + 1} == ${accounts.metadata.totalPages}" href="javascript:void(0);">Next</a>
+					           <a th:unless="${accounts.metadata.number + 1} == ${accounts.metadata.totalPages}" th:href="@{${'/accounts'}(page=${accounts.metadata.number+1},size=${accounts.metadata.size})}">Next</a>
+					        </li>
+						</ul>
+					</nav>
+               	</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+           </div>                   
+       </main>       
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <script type="module"th:src="@{js/custom/accounts.js}"></script>
+</body>
+</html>

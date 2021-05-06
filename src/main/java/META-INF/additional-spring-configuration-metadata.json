@@ -1,0 +1,122 @@
+{"properties": [
+  {
+    "name": "starcapital.logout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.logout-url'"
+  },
+  {
+    "name": "starcapital.keycloak.users.url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.keycloak.users.url'"
+  },
+  {
+    "name": "starcapital.keycloak.roles.url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.keycloak.roles.url'"
+  },
+  {
+    "name": "starcapital.logout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.logout-url'"
+  },
+  {
+    "name": "starcapital.main-branch.name",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.main-branch.name'"
+  },
+  {
+    "name": "starcapital.main-branch.address",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.main-branch.address'"
+  },
+  {
+    "name": "starcapital.keycloak.roles.delete.url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.keycloak.roles.delete.url'"
+  },
+  {
+    "name": "starcapital.logout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'starcapital.logout-url'"
+  },
+  {
+    "name": "l.keycloak.users.url",
+    "type": "java.lang.String",
+    "description": "A description for 'l.keycloak.users.url'"
+  },
+  {
+    "name": "l.keycloak.roles.url",
+    "type": "java.lang.String",
+    "description": "A description for 'l.keycloak.roles.url'"
+  },
+  {
+    "name": "l.keycloak.roles.delete.url",
+    "type": "java.lang.String",
+    "description": "A description for 'l.keycloak.roles.delete.url'"
+  },
+  {
+    "name": "saveright.logout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'saveright.logout-url'"
+  },
+  {
+    "name": "logout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'logout-url'"
+  },
+  {
+    "name": "l.main-branch.name",
+    "type": "java.lang.String",
+    "description": "A description for 'l.main-branch.name'"
+  },
+  {
+    "name": "l.main-branch.address",
+    "type": "java.lang.String",
+    "description": "A description for 'l.main-branch.address'"
+  },
+  {
+    "name": "company.account-names-prefix",
+    "type": "java.lang.String",
+    "description": "A description for 'company.account-names-prefix'"
+  },
+  {
+    "name": "company.account-password-suffix",
+    "type": "java.lang.Integer",
+    "description": "A description for 'company.account-password-suffix'"
+  },
+  {
+    "name": "keycloak.container-id",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.container-id'"
+  },
+  {
+    "name": "keycloak.manage-users-role-id",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.manage-users-role-id'"
+  },
+  {
+    "name": "company.minimum-allowed-account-balance",
+    "type": "java.lang.String",
+    "description": "A description for 'company.minimum-allowed-account-balance'"
+  },
+  {
+    "name": "spring.mail.sender",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mail.sender'"
+  },
+  {
+    "name": "spring.mail.sender",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mail.sender'"
+  },
+  {
+    "name": "company.initial-account-balance",
+    "type": "java.lang.String",
+    "description": "A description for 'company.initial-account-balance'"
+  },
+  {
+    "name": "keycloak.container-id",
+    "type": "java.lang.String",
+    "description": "A description for 'keycloak.container-id'"
+  }
+]}

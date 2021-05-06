@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(Transactions)"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header(TRANSACTIONS, ${pageCount})"></div>
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find a transaction...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>	
+               		<div th:replace="fragments/common :: tables-filter(true)"></div>	
+					<a class="neo__outset btn resource__add" th:href="@{/transactions/add}"><i class="fas fa-plus"></i> New Transaction</a>
+               </div>
+               <div class="application__body">
+               		<table class="application__table table table-striped table-sm text-center">
+						<thead class="application__table--head text-left">
+							<tr>
+								<th class="t-head">Transaction ID</th>
+								<th class="t-head">Account Name</th>
+								<th class="t-head">Type</th>
+								<th class="t-head">Amount</th>
+								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">Issued By</th>
+								<th class="t-head">Branch</th>
+								<th class="t-head">Date Issued</th>
+							</tr>
+						</thead>
+						<tbody class="application__table--body text-left">
+							<tr class="transaction__record" th:each="transaction : ${transactions}" th:id="${transaction.content.transactionId}">
+								<td class="transaction__number">
+									<a th:href="@{|/${#strings.toLowerCase(transaction.content.transactionType) + 's'}/${transaction.content.transactionId}|}" th:text="'#' + ${transaction.content.transactionId} ?: 'N/A'" th:title="'#' + ${transaction.content.transactionId} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__account-name">
+									<a th:href="@{|/accounts/${transaction.content.transactionAccountNumber}|}" th:text="${#strings.capitalize(transaction.content.transactionAccountName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.transactionAccountName)} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__type">
+									<a th:href="@{|/${#strings.toLowerCase(transaction.content.transactionType) + 's'}|}" th:text="${transaction.content.transactionType} ?: 'N/A'" th:title="${transaction.content.transactionType} ?: 'N/A'"></a>
+								</td>									
+								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(transaction.content.transactionAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(transaction.content.transactionAmount)} ?: 'N/A'"></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__branch" th:text="${#strings.capitalize(transaction.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.branch.branchName)} ?: 'N/A'"></td>
+								<td class="transaction__date" th:text="${#calendars.format(transaction.content.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(transaction.content.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="void" th:unless="${transactions.metadata.totalElements}">
+						<span class="void__text">NO TRANSACTIONS MADE</span>
+						<img class="void__image" alt="No Transactions" th:src="@{/images/transactions.svg}">
+					</div>
+					
+					<nav class="pagination-nav" aria-label="" th:if="${transactions.metadata.totalElements}">
+						<!-- <ul class="pagination" th:with="total = ${transaction.metadata.totalPages}">
+							<li th:if="${previous}" class="page-item">
+								<a class="page-link" th:href="@{/transactions(page=${transaction.metadata.number - 1})}"aria-label="Previous"> 
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+							<li th:each="page : ${#numbers.sequence(0, total - 1)}"	class="page-item"
+								th:classappend="${page} == ${transaction.metadata.number} ? 'active' : ''">
+								<a class="page-link" th:href="@{/transactions(page=${page})}" th:text="${page + 1}">
+									<span class="sr-only">(current)</span>1
+								</a>
+							</li>
+							<li th:if="${next}" class="page-item">
+								<a class="page-link" th:href="@{/transactions(page=${transaction.metadata.number + 1})}" aria-label="Next"> 
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul> -->
+						<ul class="pagination">
+					        <li th:class="${transactions.metadata.number == 0} ? 'disabled' : ''">
+					            <a th:if="${transactions.metadata.number == 0}" href="javascript:void(0);">Previous</a>
+					            <a th:unless="${transactions.metadata.number == 0}" th:href="@{${'/transactions'}(page=${transactions.metadata.number-1},size=${transactions.metadata.size})}">Previous</a>
+					        </li>					
+					        <li th:if="${transactions.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, 2)}" th:class="${transactions.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${transactions.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${transactions.metadata.number == pageNo}" th:href="@{${'/transactions'}(page=${pageNo},size=${transactions.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:unless="${transactions.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, transactions.metadata.totalPages - 1)}" th:class="${transactions.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${transactions.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${transactions.metadata.number == pageNo}" th:href="@{${'/transactions'}(page=${pageNo},size=${transactions.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:class="${transactions.metadata.number + 1} == ${transactions.metadata.totalPages} ? 'disabled' : ''">
+					           <a th:if="${transactions.metadata.number + 1} == ${transactions.metadata.totalPages}" href="javascript:void(0);">Next</a>
+					           <a th:unless="${transactions.metadata.number + 1} == ${transactions.metadata.totalPages}" th:href="@{${'/transactions'}(page=${transactions.metadata.number+1},size=${transactions.metadata.size})}">Next</a>
+					        </li>
+					    </ul>
+					</nav>
+               	</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+           </div>
+       </main>
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <!-- <script th:replace="fragments/common :: filter-scripts"></script> -->
+    <!-- <script	type="module" th:src="@{/js/custom/filter.js}"></script> -->
+    <script	type="module" th:src="@{/js/custom/transactions.js}"></script>
+</body>
+</html>

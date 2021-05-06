@@ -1,0 +1,84 @@
+.error {
+    height: 100vh;
+    background: #dfdfea;
+    overflow: hidden;
+    position: relative;
+}
+
+.error__card {
+    width: 38rem;
+    height: 38rem;
+    display: flex;
+    flex-direction: column;
+    border: none !important;
+    padding: 2rem;
+    margin: auto;
+    top: 10%;
+    left: 0;
+    right: 0;
+    position: fixed;
+}
+
+.error__card .error__card--top {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin-bottom: 2rem;
+}
+
+.error__card--top .company-logo {
+    height: 100px;
+}
+
+.error__card--top .company-logo .logo {
+    height: 100%;
+}
+
+.error__card--top .error__title {
+    text-align: center;
+    font-size: 2.3rem;
+    font-weight: 600;
+    width: 100%;
+}
+
+.error__card .error__card--bottom {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background: #e5e5ff;
+    border: solid 2px #9494bb;
+    border-radius: 1rem;
+    padding: 0 2rem;
+}
+
+.error__card--bottom .error__message {
+    font-size: 1.5rem;
+    color: #2f2b2b;
+}
+
+.error__card--bottom .error__button {
+    background: royalblue;
+    color: white;
+    padding: .7rem 2rem;
+    min-width: 130px;
+    max-width: 80%;
+    border: solid 2px #e5e5ff;
+    border-radius: 2rem;
+    text-transform: uppercase;
+    transition: background 400ms ease, color 400ms ease, border 400ms ease;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.error__card--bottom .error__button:focus, 
+.error__card--bottom .error__button:hover {
+    outline: 0;
+    border: solid 2px #4848bb;
+    color: black;
+}

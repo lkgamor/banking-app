@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head(Withdrawals)"></head>
+
+<body>
+	<section>
+       <aside th:replace="fragments/common :: app-sidebar"></aside>
+       <main>
+           <div class="main-content">
+               <div th:replace="fragments/common :: app-header(|<a href='transactions'>TRANSACTIONS</a> > Withdrawals|, ${pageCount})"></div>
+               <div class="application__header">
+               		<div class="application__header-search">
+               			<input class="neo__inset form-control resource__search" type="text" placeholder="Find a withdrawal...">
+               			<i class="fas fa-search ml-3"></i>
+               		</div>		
+               		<div th:replace="fragments/common :: tables-filter(true)"></div>			
+					<a class="neo__outset btn resource__add" th:href="@{/transactions/add}"><i class="fas fa-plus"></i> New Withdrawal</a>
+               </div>
+               <div class="application__body">
+               		<table class="application__table table table-striped table-sm text-center">
+						<thead class="application__table--head text-left">
+							<tr>
+								<th class="t-head">Withdrawal ID</th>
+								<th class="t-head">Account No_</th>
+								<th class="t-head">Account Name</th>
+								<th class="t-head">Amount</th>
+								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" >Issued By</th>
+								<th class="t-head">Branch</th>
+								<th class="t-head">Date Issued</th>
+							</tr>
+						</thead>
+						<tbody class="application__table--body text-left">
+							<tr class="transaction__record withdrawal__record" th:each="withdrawal : ${withdrawals}" th:id="${withdrawal.content.withdrawalId}">
+								<td class="transaction__number">
+									<a th:href="@{|/withdrawals/${withdrawal.content.withdrawalId}|}" th:text="'#' + ${withdrawal.content.withdrawalId} ?: 'N/A'" th:title="${withdrawal.content.withdrawalId} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__account-number">
+									<a th:href="@{|/accounts/${withdrawal.content.withdrawalAccountNumber}|}" th:text="'#' + ${#strings.capitalize(withdrawal.content.withdrawalAccountNumber)} ?: 'N/A'" th:title="${#strings.capitalize(withdrawal.content.withdrawalAccountNumber)} ?: 'N/A'"></a>
+								</td>
+								<td class="transaction__account-name" th:text="${#strings.capitalize(withdrawal.content.withdrawalAccountName)} ?: 'N/A'" th:title="${#strings.capitalize(withdrawal.content.withdrawalAccountName)} ?: 'N/A'"></td>						
+								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(withdrawal.content.withdrawalAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(withdrawal.content.withdrawalAmount)} ?: 'N/A'"></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(withdrawal.content.employee.employeeFirstName) +' '+ #strings.capitalize(withdrawal.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(withdrawal.content.employee.employeeFirstName) +' '+ #strings.capitalize(withdrawal.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__branch" th:text="${#strings.capitalize(withdrawal.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(withdrawal.content.branch.branchName)} ?: 'N/A'"></td>
+								<td class="transaction__date" th:text="${#calendars.format(withdrawal.content.withdrawalDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(withdrawal.content.withdrawalDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="void" th:unless="${withdrawals.metadata.totalElements}">
+						<span class="void__text">NO WITHDRAWALS MADE</span>
+						<img class="void__image" alt="No Withdrawals" th:src="@{/images/transactions.svg}">
+					</div>
+					
+					<nav class="pagination-nav" aria-label="" th:if="${withdrawals.metadata.totalElements}">
+						<ul class="pagination">
+					        <li th:class="${withdrawals.metadata.number == 0} ? 'disabled' : ''">
+					            <a th:if="${withdrawals.metadata.number == 0}" href="javascript:void(0);">Previous</a>
+					            <a th:unless="${withdrawals.metadata.number == 0}" th:href="@{${'/withdrawals'}(page=${withdrawals.metadata.number-1},size=${withdrawals.metadata.size})}">Previous</a>
+					        </li>					
+					        <li th:if="${withdrawals.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, 2)}" th:class="${withdrawals.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${withdrawals.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${withdrawals.metadata.number == pageNo}" th:href="@{${'/withdrawals'}(page=${pageNo},size=${withdrawals.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:unless="${withdrawals.metadata.totalPages &gt; 3}" th:each="pageNo : ${#numbers.sequence(0, withdrawals.metadata.totalPages - 1)}" th:class="${withdrawals.metadata.number eq pageNo}? 'active' : ''">
+					            <a th:if="${withdrawals.metadata.number} == ${pageNo}" href="javascript:void(0);">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>
+					            <a th:unless="${withdrawals.metadata.number == pageNo}" th:href="@{${'/withdrawals'}(page=${pageNo},size=${withdrawals.metadata.size})}">
+					                <span th:text="${pageNo + 1}"></span>
+					            </a>					
+					        </li>
+					        <li th:class="${withdrawals.metadata.number + 1} == ${withdrawals.metadata.totalPages} ? 'disabled' : ''">
+					           <a th:if="${withdrawals.metadata.number + 1} == ${withdrawals.metadata.totalPages}" href="javascript:void(0);">Next</a>
+					           <a th:unless="${withdrawals.metadata.number + 1} == ${withdrawals.metadata.totalPages}" th:href="@{${'/withdrawals'}(page=${withdrawals.metadata.number+1},size=${withdrawals.metadata.size})}">Next</a>
+					        </li>
+					    </ul>
+					</nav>             
+               	</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+           </div>
+       </main>
+    </section>
+    <div th:replace="fragments/common :: required-scripts"></div>
+    <!-- <script th:replace="fragments/common :: filter-scripts"></script> -->
+    <!-- <script	type="module" th:src="@{/js/custom/filter.js}"></script> -->
+    <script	type="module" th:src="@{/js/custom/withdrawals.js}"></script>
+</body>
+</html>

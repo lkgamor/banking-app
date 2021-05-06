@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: error-head('Server Error')"></head>
+<body>
+	<section class="error">
+		<div class="error__card">
+			<div class="error__card--top">
+				<div class="company-logo"><img class="logo" alt="Saveright Logo" th:src="@{/images/logo.png}"></div>
+				<h2 class="error__title">Something Unexpected Just Happened</h2> 
+			</div>
+			<div class="error__card--bottom">
+				<span class="error__message">Please contact Administrator for further assistance if this persists</span>
+				<a type="button" class="btn error__button" onclick="window.history.back();">Go Back</a>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

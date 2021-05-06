@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: head('Loan - ' + ${pageTitle})"></head>
+
+<body>
+	<section>
+		<aside th:replace="fragments/common :: app-sidebar"></aside>
+		<main>
+			<div class="main-content">
+				<div th:replace="fragments/common :: app-header('LOAN PAYMENT HISTORY','')"></div>
+				<div class="existing-transaction loan__payments" th:object="${transaction}">	
+					<a class="btn custom-button custom-button--return neo__outset" href="javascript:history.go(-1)"><i class="fas fa-arrow-circle-left mr-2"></i>Return</a>	
+					<div class="existing-transaction--left">
+						<fieldset th:if="${#lists.size(loanPaymentRecords)} &gt; 0" th:each="loanPayment : ${loanPaymentRecords}" class="loan__payment warning neo__outset" th:classappend="${loanPayment.loanStatus} ? 'part-payment':'full-payment'">
+							<legend>Payment Info</legend>
+    						<div class="loan__payment--top">
+	    						<div class="new-resource__details-field">
+									<span class="new-resource__details--title">
+										<span class="mr-3"> Paid</span>
+										<span class="new-resource__details--value ghana-cedi-symbol" th:text="${loanPayment.loanPaymentAmount}"></span>
+									</span> 
+									<span class="new-resource__details--title">
+										<span class="mr-3"> Debt</span>
+										<span class="new-resource__details--value ghana-cedi-symbol" th:text="${loanPayment.loanPaymentBalance}" th:classappend="${loanPayment.loanPaymentBalance} &lt; 0 ? 'deposit':''"></span>
+									</span>
+								</div>
+								<div class="new-resource__details-field">
+									<span class="new-resource__details--title">
+										<span>
+											<i class="far fa-calendar fa-sm text-dark"></i>
+											<span class="new-resource__details--value payment-date" th:text="${#calendars.format(loanPayment.loanPaymentDate,'EEE, d MMM yyyy HH:mm')}"></span>
+										</span>
+									</span> 
+								</div>
+							</div>
+    						<div class="loan__payment--bottom">
+	    						<div class="account__image neo__outset">
+									<img alt="Employee Picture" th:src="@{/images/account.svg}">
+								</div>
+								<div class="existing-transaction__info">								
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title">
+											<span>
+												<i class="fas fa-user-tie fa-sm text-dark"></i> Issued by
+											</span>
+											<a class="new-resource__details--value" th:href="@{|/employees/${loanPayment.employee.employeeId}|}" th:text="${#strings.capitalize(loanPayment.employee.employeeFirstName)} + ' ' + ${#strings.capitalize(loanPayment.employee.employeeLastName)}">Employee Name</a>
+										</span>
+									</div>
+									<div class="new-resource__details-field">
+										<div class="resource__status">
+											Working Status
+											<span class="resource__status--state active" th:if="${loanPayment.employee.employeeWorkingStatus}">
+												<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+												<span>Active</span>
+											</span>
+											<span class="resource__status--state terminated" th:unless="${loanPayment.employee.employeeWorkingStatus}">
+												<span><i class="fas fa-circle" data-toggle="tooltip" title="Terminated"></i></span>
+												<span>Terminated</span>
+											</span>
+										</div>
+										<span class="new-resource__details--value" th:text="${loanPayment.employee.employeeContact}">Contact Number</span> 
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<div class="loan__payments-records void__text" th:unless="${#lists.size(loanPaymentRecords)} &gt; 0">
+							<i class="fas fa-layer-group"></i>
+							No Loan Payment Records
+						</div>
+					</div>
+					<div class="existing-transaction--right">
+						<fieldset class="neo__outset loan__info">
+							<legend>Loan Info</legend>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Loan Id</span> 
+								<span class="new-resource__details--value" th:text="*{transactionId}"></span>
+							</div>
+							<div class="new-resource__details-field">
+								<span class="new-resource__details--title"><i class="fas fa-calendar fa-sm text-dark"></i> Date Issued</span> 
+								<span class="new-resource__details--value" th:text="*{#calendars.format(transactionDate,'EEE, d MMM yyyy HH:mm:ss')}"></span>
+							</div>
+							<div class="new-resource__details-field neo__outset">
+								<span class="new-resource__details--title"><i class="fas fa-money-check-alt fa-sm text-dark"></i> Loan Amount Taken </span> 
+								<span class="new-resource__details--value ghana-cedi-symbol" th:text="*{transactionAmount}"></span>
+							</div>
+							<div class="new-resource__details-field neo__outset">
+								<span class="new-resource__details--title"><i class="fas fa-coins fa-sm text-dark"></i> Account Balance</span> 
+								<span class="new-resource__details--value ghana-cedi-symbol" th:text="*{totalBalance}"></span>
+							</div>
+						</fieldset>
+  						<fieldset class="neo__outset account__info" th:classappend="${accountOwing} ? 'account__record account--owing':''">
+							<legend>Account Info</legend>
+							<div class="account__image neo__outset">
+								<img th:if="${accountImage}" alt="Account Picture" th:src="${'data:image/png;base64,'+ accountImage}">
+								<img th:unless="${accountImage}" alt="Account Picture" th:src="@{/images/account.svg}">
+							</div>
+							<div class="existing-transaction__info">
+								<div class="resource__status">
+									Account Status
+									<span class="resource__status--state active" th:if="${accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Active"></i></span>
+										<span>Active</span>
+									</span>
+									<span class="resource__status--state inactive" th:unless="${accountStatus}">
+										<span><i class="fas fa-circle" data-toggle="tooltip" title="Closed"></i></span>
+										<span>Closed</span>
+									</span>
+								</div>
+								<div class="existing-transaction__info--bottom">
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-user fa-sm text-dark"></i> Account Name</span> 
+										<span class="new-resource__details--value" th:text="*{transactionAccountName}"></span>
+									</div>
+									<div class="new-resource__details-field">
+										<span class="new-resource__details--title"><i class="fas fa-money-check-alt fa-sm text-dark"></i> Account Number</span> 
+										<a class="new-resource__details--value" th:href="@{|/accounts/${transaction.transactionAccountNumber}|}" th:text="*{transactionAccountNumber}"></a>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+			</div>
+		</main>
+	</section>
+	<div th:replace="fragments/common :: required-scripts"></div>
+</body>
+</html>
