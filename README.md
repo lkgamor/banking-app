@@ -1,5 +1,5 @@
 # Banking Web App
-A sample web application for a savings and loans setup
+A sample web application for a savings and loans setup.
 
 ## Tech Stack Used:
 - Java
@@ -10,3 +10,4 @@ A sample web application for a savings and loans setup
 - Centrifuge.js
 - Flyway
 - MySQL
+- Docker
