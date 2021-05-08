@@ -28,7 +28,7 @@ WORKDIR /banking
 COPY ./src ./src
 
 #Copy over built artifacts from maven-dependencies
-COPY --from=maven-dependencies target/saveright.jar ./target/banking.jar
+COPY --from=maven-dependencies target/banking.jar ./target/banking.jar
 
 EXPOSE 8080
 
