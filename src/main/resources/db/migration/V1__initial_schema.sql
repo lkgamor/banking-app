@@ -367,7 +367,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Account_BEFORE_UPDATE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Account_BEFORE_UPDATE`
 BEFORE UPDATE ON `banking`.`account`
 FOR EACH ROW
@@ -380,7 +380,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Account_BEFORE_DELETE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Account_BEFORE_DELETE`
 BEFORE DELETE ON `banking`.`account`
 FOR EACH ROW
@@ -393,7 +393,7 @@ END$$
 -- DROP TRIGGER IF EXISTS `banking`.`Transaction_AFTER_INSERT` $$
 -- USE `banking`$$
 -- CREATE
--- DEFINER=`root`@`%`
+-- DEFINER=`louis`@`%`
 -- TRIGGER `banking`.`Transaction_AFTER_INSERT`
 -- AFTER INSERT ON `banking`.`transaction`
 -- FOR EACH ROW
@@ -414,7 +414,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Transaction_BEFORE_DELETE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Transaction_BEFORE_DELETE`
 BEFORE DELETE ON `banking`.`transaction`
 FOR EACH ROW
@@ -428,7 +428,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Deposit_BEFORE_DELETE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Deposit_BEFORE_DELETE`
 BEFORE DELETE ON `banking`.`deposit`
 FOR EACH ROW
@@ -442,7 +442,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Loan_BEFORE_DELETE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Loan_BEFORE_DELETE`
 BEFORE DELETE ON `banking`.`loan`
 FOR EACH ROW
@@ -456,7 +456,7 @@ USE `banking`$$
 DROP TRIGGER IF EXISTS `banking`.`Withdrawal_BEFORE_DELETE` $$
 USE `banking`$$
 CREATE
-DEFINER=`root`@`%`
+DEFINER=`louis`@`%`
 TRIGGER `banking`.`Withdrawal_BEFORE_DELETE`
 BEFORE DELETE ON `banking`.`withdrawal`
 FOR EACH ROW
