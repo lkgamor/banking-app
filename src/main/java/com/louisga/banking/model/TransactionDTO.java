@@ -17,6 +17,8 @@ public class TransactionDTO {
 	private String transactionType;
 	
 	private String transactionBranch;
+	
+	private String transactionIssuedBy;
 
 	private Double transactionAmount;
 	

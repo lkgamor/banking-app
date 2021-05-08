@@ -70,7 +70,7 @@
 						<button class="btn custom-button custom-button--save neo__outset" th:unless="${employeeId}" onclick="saveTransaction()">Make Transaction</button>
 					</div>
 				</div>
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal" ></div> 
 			</div>
 		</main>
 	</section>

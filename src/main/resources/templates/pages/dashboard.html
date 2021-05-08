@@ -23,7 +23,7 @@
 								</span>
 							</div>
 							<div class="dashboard__body--middle">
-								<a class="custom-card-container" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" th:href="@{/employees}">
+								<a class="custom-card-container" th:href="@{/employees}">
 									<div class="dashboard__body--middle-card custom-card neo__outset">
 										<div class="card__name">Employees</div>
 										<div class="card__total">
@@ -91,7 +91,7 @@
 			                </aside>
 						</div>
 					</div>
-					<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+					<div th:replace="fragments/common :: notification-modal"></div> 
                 </div>                   
             </main>       
         </section>

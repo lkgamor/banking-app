@@ -298,7 +298,7 @@ const buildTable = loans => {
 		const loanAccountNumber = loan.loanAccountNumber || DOMStrings.notAvailable;
 		const loanAmount = loan.loanAmount.toFixed(1) || DOMStrings.notAvailable;
 		const loanAmountPayed = loan.loanPayed.toFixed(2) || DOMStrings.notAvailable;
-		const transactionIssuedBy = setTransactionIssuedBy(loan.employee.employeeFirstName + ' ' + loan.employee.employeeLastName);
+		const loanIssuedBy = loan.employee.employeeFirstName + ' ' + loan.employee.employeeLastName;
 		const branchName = loan.branch.branchName || DOMStrings.notAvailable;
 		const loanDate = new Date(loan.loanDate).toGMTString() || DOMStrings.notAvailable;
 		const loanPayedDate = new Date(loan.loanPayedDate).toGMTString() || DOMStrings.notAvailable;
@@ -314,7 +314,7 @@ const buildTable = loans => {
 						<td class="transaction__account-name" title="${loanAccountName}">${loanAccountName}</td>									
 						<td class="transaction__amount ghana-cedi-symbol" title="GH₵ ${loanAmount}">${loanAmount}</td>
 						<td class="transaction__amount-payed ghana-cedi-symbol" title="GH₵ ${loanAmountPayed}">${loanAmountPayed}</td>
-						${transactionIssuedBy}
+						<td class="transaction__issuer" title="${loanIssuedBy}">${loanIssuedBy}</td>
 						<td class="transaction__branch" title="${branchName}">${branchName}</td>
 						<td class="transaction__date" title="${loanDate}">${loanDate}</td>
 						<td	class="resource__status">
@@ -465,11 +465,4 @@ const initLoanPayment = (loanId, loanAccountName, loanAccountNumber, loanAmount)
 	$('#summary-account-name').text(loanAccountName);
 	$('#account-number').text(loanAccountNumber);
 	$('#loan-amount').text(loanAmount);
-};
-
-
-const setTransactionIssuedBy = employeeName => {
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager))
-		return `<td class="transaction__issuer" title="${employeeName}">${employeeName}</td>`;
-	return ``;
 };

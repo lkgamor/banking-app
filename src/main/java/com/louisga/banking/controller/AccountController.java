@@ -19,10 +19,12 @@ import com.louisga.banking.model.Account;
 import com.louisga.banking.model.AccountToUIDTO;
 import com.louisga.banking.model.Branch;
 import com.louisga.banking.model.CardType;
+import com.louisga.banking.model.Employee;
 import com.louisga.banking.service.AccountAuditService;
 import com.louisga.banking.service.AccountService;
 import com.louisga.banking.service.BranchService;
 import com.louisga.banking.service.CardService;
+import com.louisga.banking.service.EmployeeService;
 import com.louisga.banking.service.TransactionAuditService;
 import com.louisga.banking.utility.AppConstants;
 
@@ -35,6 +37,7 @@ public class AccountController {
 	private final CardService cardService;	
 	private final BranchService branchService;	
 	private final AccountService accountService;
+	private final EmployeeService employeeService;
 	private final CompanyConfiguration companyConfig;
 	private final AccountAuditService accountAuditsService;
 	private final TransactionAuditService transactionAuditsService;
@@ -78,11 +81,12 @@ public class AccountController {
 	@GetMapping("/accounts/add")
 	String getAddAccountDetailsPage(Model model) throws Exception {
 
-		List<CardType> cards = cardService.getCards();
+		List<CardType> cards = cardService.getCards();	
 		List<Branch> branches = branchService.getBranches();	
-		
+		Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
 
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_CARDS, cards);
+		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_EMPLOYEE, employee);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_BRANCHES, branches);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_GENDERS, genderList);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_PAGE_TITLE, "New Account");
@@ -102,11 +106,13 @@ public class AccountController {
 	@GetMapping("/accounts/{accountNumber}")
 	String getAccountDetailsPage(@PathVariable String accountNumber, Model model) throws Exception	{
 		List<CardType> cards = cardService.getCards();
-		List<Branch> branches = branchService.getBranches();		
+		List<Branch> branches = branchService.getBranches();	
+		Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());	
 		AccountToUIDTO account =  accountService.getAccountDetails(accountNumber);
 			
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_CARDS, cards);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_ACCOUNT, account);
+		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_EMPLOYEE, employee);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_BRANCHES, branches);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_GENDERS, genderList);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_PAGE_TITLE, account.getAccountName());

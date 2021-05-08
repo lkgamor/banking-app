@@ -297,7 +297,7 @@ const buildTable = deposits => {
 		const depositAccountName = deposit.depositedAccountName || DOMStrings.notAvailable;
 		const depositAccountNumber = deposit.depositedAccountNumber || DOMStrings.notAvailable;
 		const depositAmount = deposit.depositAmount.toFixed(1) || DOMStrings.notAvailable;
-		const depositIssuedBy = setTransactionIssuedBy(deposit.employee.employeeFirstName + ' ' + deposit.employee.employeeLastName);
+		const depositIssuedBy = deposit.employee.employeeFirstName + ' ' + deposit.employee.employeeLastName;
 		const branchName = deposit.branch.branchName || DOMStrings.notAvailable;
 		const depositDate = new Date(deposit.depositDate).toGMTString() || DOMStrings.notAvailable;
 
@@ -310,7 +310,7 @@ const buildTable = deposits => {
 						</td>
 						<td class="transaction__account-name" title="${depositAccountName}">${depositAccountName}</td>									
 						<td class="transaction__amount ghana-cedi-symbol" title="GH₵ ${depositAmount}">${depositAmount}</td>						
-						${depositIssuedBy}
+						<td class="transaction__issuer" title="${depositIssuedBy}">${depositIssuedBy}</td>
 						<td class="transaction__branch" title="${branchName}">${branchName}</td>
 						<td class="transaction__date" title="${depositDate}">${depositDate}</td>
 					</tr>`;
@@ -421,11 +421,4 @@ const buildLinkUrl = url => {
 	}
 	
 	return link.split(',')[0];
-};
-
-
-const setTransactionIssuedBy = employeeName => {
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager))
-		return `<td class="transaction__issuer" title="${employeeName}">${employeeName}</td>`;
-	return ``;
 };

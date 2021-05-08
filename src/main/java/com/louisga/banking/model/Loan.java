@@ -51,6 +51,10 @@ public class Loan implements Serializable {
 	@JoinColumn(name="loan_branch", referencedColumnName = "branch_id")
 	private Branch branch;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name= "issued_by", referencedColumnName = "employee_id")
+	private Employee employee;
+
 	@Column(name="loan_status")
 	private Boolean loanStatus;
 	

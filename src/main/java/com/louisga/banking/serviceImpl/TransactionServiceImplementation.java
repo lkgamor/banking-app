@@ -21,6 +21,7 @@ import com.louisga.banking.model.AccountToUIDTO;
 import com.louisga.banking.model.Branch;
 import com.louisga.banking.model.Deposit;
 import com.louisga.banking.model.EmailPayload;
+import com.louisga.banking.model.Employee;
 import com.louisga.banking.model.Loan;
 import com.louisga.banking.model.LoanPayment;
 import com.louisga.banking.model.LoanToPay;
@@ -40,6 +41,7 @@ import com.louisga.banking.repository.TransactionRepository;
 import com.louisga.banking.repository.WithdrawalRepository;
 import com.louisga.banking.service.AccountService;
 import com.louisga.banking.service.BranchService;
+import com.louisga.banking.service.EmployeeService;
 import com.louisga.banking.service.TransactionService;
 import com.louisga.banking.utility.AppConstants;
 import com.louisga.banking.utility.CentrifugoPublisher;
@@ -57,6 +59,7 @@ public class TransactionServiceImplementation implements TransactionService {
 	
 	private final BranchService branchService;
 	private final AccountService accountService;
+	private final EmployeeService employeeService;
 	
 	private final LoanRepository loanRepository;
 	private final LoanPaymentRepository loanPaymentRepository;
@@ -148,7 +151,7 @@ public class TransactionServiceImplementation implements TransactionService {
 	}
 	
 	@Override
-	public Double makeLoanPayment(String issuedBy, String loanId, LoanToPay loanToPay) throws Exception {
+	public Double makeLoanPayment(String loanId, LoanToPay loanToPay) throws Exception {
 		
 		Boolean loanStatus = false; //false means loan is not active i.e has been paid off
 		String transactionAccountName = loanToPay.getLoanAccountName();
@@ -158,8 +161,10 @@ public class TransactionServiceImplementation implements TransactionService {
 		Double loanAmount = loanToPay.getLoanAmount();
 		
 		Double existingPaymentMade = getExistingPaymentAmount(loanId);
+	    
+		Employee paymentIssuedBy = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
 		
-		Branch branch = branchService.getBranchDetails("21cfe333-042c-43ad-90bd-851437cdaea0");
+		Branch branch = paymentIssuedBy.getBranch();
 		
 		Double amountPayed = existingPaymentMade + transactionAmount;		
 		Double amountInExcess = amountPayed - loanAmount;	
@@ -175,11 +180,12 @@ public class TransactionServiceImplementation implements TransactionService {
 			TransactionDTO excessLoanPaymentToSaveAsDeposit = new TransactionDTO();
 			excessLoanPaymentToSaveAsDeposit.setTransactionAccountName(transactionAccountName);
 			excessLoanPaymentToSaveAsDeposit.setTransactionAccountNumber(transactionAccountNumber);
-			excessLoanPaymentToSaveAsDeposit.setTransactionType("DEPOSIT");
+			excessLoanPaymentToSaveAsDeposit.setTransactionType(AppConstants.TRANSACTION_TYPE_DEPOSIT);
 			excessLoanPaymentToSaveAsDeposit.setTransactionAmount(amountInExcess);
+			excessLoanPaymentToSaveAsDeposit.setTransactionIssuedBy(paymentIssuedBy.getEmployeeId());
 			excessLoanPaymentToSaveAsDeposit.setTransactionBranch(branch.getBranchId());
 			
-			saveTransaction(issuedBy, excessLoanPaymentToSaveAsDeposit);
+			saveTransaction(excessLoanPaymentToSaveAsDeposit);
 
 		} else {
 			try {
@@ -194,7 +200,7 @@ public class TransactionServiceImplementation implements TransactionService {
 		
 		//Create a loan payment record in database
 		try {			
-			LoanPayment loanPayment = LoanToPay.toLoanPaymentFromLoanToPay(loanId, loanPaymentDate, transactionAmount, amountLeftToBePayed, loanStatus);
+			LoanPayment loanPayment = LoanToPay.toLoanPaymentFromLoanToPay(loanId, loanPaymentDate, transactionAmount, amountLeftToBePayed, paymentIssuedBy, loanStatus);
 			loanPaymentRepository.save(loanPayment);
 			log.info("{} ==> created a loan payment record for {}'s loan '{}'", AppConstants.ANONYMOUS, transactionAccountName, loanId);
 		} catch (Exception e) {
@@ -473,11 +479,12 @@ public class TransactionServiceImplementation implements TransactionService {
 	}
 	
 	@Override
-	public TransactionResponse saveTransaction(String issuedBy, TransactionDTO transactionDTO) throws Exception {
+	public TransactionResponse saveTransaction(TransactionDTO transactionDTO) throws Exception {
 		
 		LocalDateTime now = LocalDateTime.now();
 		ZonedDateTime transactionDate = ZonedDateTime.now();
 	    AccountToUIDTO transactionAccount = accountService.getAccountDetails(transactionDTO.getTransactionAccountNumber());
+	    Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
 	    Branch branch = branchService.getBranchDetails(transactionDTO.getTransactionBranch());
 
 		String transactionID = "";
@@ -541,19 +548,22 @@ public class TransactionServiceImplementation implements TransactionService {
 	    transaction.setTransactionAmount(transactionAmount);
 	    transaction.setTransactionAccountName(transactionAccountName);
 	    transaction.setTransactionAccountNumber(transactionAccountNumber);
+	    transaction.setEmployee(employee);
 	    transaction.setBranch(branch);
 	    
 	    try {
 			log.info("{} ==> created a transaction on account '{}'", AppConstants.ANONYMOUS, transactionDTO.getTransactionAccountName());
 			transactionRepository.save(transaction);
 			saveTransactionToApproriateTable(transaction);
-			
+
+			String employeeFullName = employee.getEmployeeFirstName().concat(" ").concat(employee.getEmployeeLastName());
 			response.setTransactionId(transactionID);
 			response.setTransactionAccountName(transactionAccountName);
 			response.setTransactionAccountNumber(transactionAccountNumber);
 			response.setTransactionAmount(transactionAmount);
 			response.setTransactionType(transactionType);
 			response.setTransactionDate(transactionDate);
+			response.setTransactionIssuedBy(employeeFullName);
 			response.setTransactionBranch(branch.getBranchName());
 			
 			try {
@@ -584,7 +594,7 @@ public class TransactionServiceImplementation implements TransactionService {
 			
 			return response;
 		} catch (Exception e) {
-			log.info("{}'s ==> request to create transation on account '{}' failed", AppConstants.ANONYMOUS, transactionDTO.getTransactionAccountName());
+			log.info("{}'s ==> request to create transaction on account '{}' failed", AppConstants.ANONYMOUS, transactionDTO.getTransactionAccountName());
 			throw new Exception("Save Transaction [" + transactionID + "] Failed");			
 		}			
 		
@@ -602,6 +612,8 @@ public class TransactionServiceImplementation implements TransactionService {
 				loanToSave.setLoanAccountName(transaction.getTransactionAccountName());
 				loanToSave.setLoanAccountNumber(transaction.getTransactionAccountNumber());
 				loanToSave.setLoanStatus(true);
+				loanToSave.setLoanPayed(0.00);
+				loanToSave.setEmployee(transaction.getEmployee());
 				loanToSave.setBranch(transaction.getBranch());
 				try {
 					loanRepository.save(loanToSave);
@@ -619,6 +631,7 @@ public class TransactionServiceImplementation implements TransactionService {
 				depositToSave.setTotalBalance(transaction.getTotalBalance());
 				depositToSave.setDepositedAccountName(transaction.getTransactionAccountName());
 				depositToSave.setDepositedAccountNumber(transaction.getTransactionAccountNumber());
+				depositToSave.setEmployee(transaction.getEmployee());
 				depositToSave.setBranch(transaction.getBranch());
 				try {
 					depositRepository.save(depositToSave);
@@ -636,6 +649,7 @@ public class TransactionServiceImplementation implements TransactionService {
 				withdrawalToSave.setTotalBalance(transaction.getTotalBalance());
 				withdrawalToSave.setWithdrawalAccountName(transaction.getTransactionAccountName());
 				withdrawalToSave.setWithdrawalAccountNumber(transaction.getTransactionAccountNumber());
+				withdrawalToSave.setEmployee(transaction.getEmployee());
 				withdrawalToSave.setBranch(transaction.getBranch());
 				try {
 					withdrawalRepository.save(withdrawalToSave);

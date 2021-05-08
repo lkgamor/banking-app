@@ -56,15 +56,19 @@ public class Account implements Serializable {
 	@JoinColumn(name="account_id_type", referencedColumnName = "card_type_id")
 	private CardType card;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="account_officer", referencedColumnName = "employee_id")
+	private Employee employee;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="account_branch", referencedColumnName = "branch_id")
+	private Branch branch;
+
 	@Column(name= "account_id_number")
 	private String accountIDNumber;
 
 	@Column(name= "account_occupation")
 	private String accountOccupation;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="account_branch", referencedColumnName = "branch_id")
-	private Branch branch;
 	
 	@Column(name= "account_user_gender")
 	private String accountUserGender;

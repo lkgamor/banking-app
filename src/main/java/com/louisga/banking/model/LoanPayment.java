@@ -5,9 +5,12 @@ import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
@@ -37,5 +40,9 @@ public class LoanPayment implements Serializable {
 
 	@Column(name="loan_status")
 	private Boolean loanStatus;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name= "loan_payment_issued_by", referencedColumnName = "employee_id")
+	private Employee employee;
 	
 }

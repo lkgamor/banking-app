@@ -40,6 +40,10 @@ public class Withdrawal implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="withdrawal_branch", referencedColumnName = "branch_id")
 	private Branch branch;
+	
+	@ManyToOne(fetch = FetchType.EAGER)	
+	@JoinColumn(name= "issued_by", referencedColumnName = "employee_id")
+	private Employee employee;
 
 	@Column(name="withdrawal_account_number")
 	private String withdrawalAccountNumber;

@@ -31,7 +31,7 @@ public interface TransactionService {
 
 	void confirmLoanPayed(String loanId, Double amountPayed, String accountNumber, ZonedDateTime loanPaymentDate);
 
-	Double makeLoanPayment(String issuedBy, String loanId, LoanToPay loan) throws Exception;
+	Double makeLoanPayment(String loanId, LoanToPay loan) throws Exception;
 
 	ArrayList<Loan> getLoans() throws Exception;
 
@@ -84,7 +84,7 @@ public interface TransactionService {
 
 	Transaction getTransactionDetails(String id) throws Exception;
 
-	TransactionResponse saveTransaction(String issuedBy, TransactionDTO transactionDTO) throws Exception;
+	TransactionResponse saveTransaction(TransactionDTO transactionDTO) throws Exception;
 
 	Page<Transaction> getPagedTransactionsForAccount(PageRequest pageRequest, String accountNumber) throws Exception;
 

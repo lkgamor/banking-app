@@ -12,9 +12,7 @@
                		<div class="application__header-search">
                			<input class="neo__inset form-control resource__search" type="text" placeholder="Find an employee...">
                			<i class="fas fa-search ml-3"></i>
-               		</div>		
-               		<div th:replace="fragments/common :: tables-filter(false)"></div>			
-					<a class="neo__outset btn resource__add" th:href="@{/employees/add}"><i class="fas fa-plus"></i> New Employee</a>
+               		</div>				
                </div>
                <div class="application__body">
                		<table class="application__table table table-striped table-sm text-center">
@@ -33,7 +31,7 @@
 						<tbody class="application__table--body text-left">
 							<tr class="employee__record" th:each="employee : ${employees}" th:id="employee_ + ${employee.content.employeeId}">
 								<td	class="employeeName">
-									<a th:href="@{|/employees/${employee.content.employeeId}|}" th:title="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}" th:text="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}"></a>
+									<span th:title="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}" th:text="${#strings.capitalize(employee.content.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.content.employeeLastName)}"></span>
 								</td>
 								<td	class="employee__contact" th:title="${#strings.capitalize(employee.content.employeeContact)}">
 									<div class="d-flex">

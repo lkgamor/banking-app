@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.louisga.banking.config.CompanyConfiguration;
 import com.louisga.banking.model.Deposit;
+import com.louisga.banking.model.Employee;
 import com.louisga.banking.model.Loan;
 import com.louisga.banking.model.LoanPayment;
 import com.louisga.banking.model.Transaction;
 import com.louisga.banking.model.Withdrawal;
 import com.louisga.banking.service.AccountService;
+import com.louisga.banking.service.EmployeeService;
 import com.louisga.banking.service.TransactionService;
 import com.louisga.banking.utility.AppConstants;
 
@@ -31,7 +34,9 @@ import lombok.RequiredArgsConstructor;
 public class TransactionController {
 	
 	private final AccountService accountService;
+	private final EmployeeService employeeService;
 	private final TransactionService transactionService;
+	private final CompanyConfiguration companyConfig;
 
 	private List<String> genderList = List.of("Male", "Female");
 
@@ -76,6 +81,9 @@ public class TransactionController {
 	 */
 	@GetMapping("/transactions/add")
 	String getAddTransactionPage(Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "transactionAccountName") String sort) throws Exception {
+
+		Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
+		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_EMPLOYEE, employee);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_PAGE_TITLE, "New Transaction");
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_TRANSACTION_ACCOUNT,"<i class='fas fa-coins'></i> New Transaction");
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_ACCOUNTS, accountService.getActiveAccounts());	
@@ -126,6 +134,8 @@ public class TransactionController {
 					   @CookieValue(value=AppConstants.FILTER_BY_DATE, required=false, defaultValue="") String daterange) throws Exception {
 		
 		Page<Loan> loanList = transactionService.getPagedLoans(PageRequest.of(page, size, Direction.DESC, sort), daterange);
+		Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
+		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_EMPLOYEE, employee);
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_LOANS, assembler.toModel(loanList));
 		model.addAttribute(AppConstants.MODEL_ATTRIBUTE_PAGE_COUNT, loanList.getTotalElements());
 		return "pages/transactions/loans/index";

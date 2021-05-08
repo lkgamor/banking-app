@@ -50,7 +50,7 @@ public class AccountDTO {
 	
 	private byte[] accountImage;
 	
-	public static Account toEntityFromDTO(String prefix, AccountDTO accountDTO, CardType card, Branch branch) {
+	public static Account toEntityFromDTO(String prefix, AccountDTO accountDTO, Employee employee, CardType card, Branch branch) {
 		Random rand = new Random();
 	    String accountNumber = prefix;
 	    for (int i = 0; i < 5; i++) {
@@ -60,6 +60,7 @@ public class AccountDTO {
 		
 		Account account = new Account();
 	    account.setCard(card);
+	    account.setEmployee(employee);
 	    account.setAccountOwing(false);
 	    account.setAccountStatus(true);
 	    account.setAccountBalance(0.00);
@@ -112,12 +113,15 @@ public class AccountDTO {
 		accountDTO.setAccountImage(account.getAccountImage());
 		accountDTO.setCard(account.getCard());
 		accountDTO.setBranch(account.getBranch());
+		accountDTO.setEmployee(account.getEmployee());
 		accountDTO.setTransactions(accountTransactions);
 		return accountDTO;		
 	}	
 	
 	public static AccountResponse toCentrifugoResponseFromEntity(Account account) {
 		AccountResponse centrifugoResponse = new AccountResponse();
+		String issuedby = account.getEmployee().getEmployeeFirstName().concat(" ").concat(account.getEmployee().getEmployeeLastName());
+		centrifugoResponse.setOpenedBy(issuedby);
 		centrifugoResponse.setAccountName(account.getAccountName());
 		centrifugoResponse.setAccountNumber(account.getAccountNumber());
 		centrifugoResponse.setDateOpened(account.getAccountDateOpened());

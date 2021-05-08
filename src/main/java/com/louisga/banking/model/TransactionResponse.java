@@ -17,6 +17,8 @@ public class TransactionResponse {
 	private String transactionBranch;
 
 	private Double transactionAmount;
+	
+	private String transactionIssuedBy;
 
 	private ZonedDateTime transactionDate;
 	

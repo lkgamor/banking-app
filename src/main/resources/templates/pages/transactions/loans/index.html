@@ -25,7 +25,7 @@
 								<th class="t-head">Account Name</th>
 								<th class="t-head">Amount</th>
 								<th class="t-head">Payed</th>
-								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" >Issued By</th>
+								<th class="t-head" >Issued By</th>
 								<th class="t-head">Branch</th>
 								<th class="t-head">Date Issued</th>
 								<th class="t-head">Status</th>
@@ -42,7 +42,7 @@
 								<td class="transaction__account-name" th:text="${#strings.capitalize(loan.content.loanAccountName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.loanAccountName)} ?: 'N/A'"></td>						
 								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(loan.content.loanAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(loan.content.loanAmount)} ?: 'N/A'"></td>
 								<td class="transaction__amount-payed ghana-cedi-symbol" th:text="${#strings.capitalize(loan.content.loanPayed)} ?: '0.00'" th:title="'GH₵ ' + ${#strings.capitalize(loan.content.loanPayed)} ?: '0.00'"></td>
-								<td class="transaction__issuer" th:text="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.employee.employeeFirstName) +' '+ #strings.capitalize(loan.content.employee.employeeLastName)} ?: 'N/A'" ></td>
 								<td class="transaction__branch" th:text="${#strings.capitalize(loan.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(loan.content.branch.branchName)} ?: 'N/A'"></td>
 								<td class="transaction__date" th:text="${#calendars.format(loan.content.loanDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(loan.content.loanDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
 								<td	class="resource__status">
@@ -140,7 +140,7 @@
 						</div>
 					</div>
 				</div> 
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal"></div> 
            </div>
        </main>
     </section>

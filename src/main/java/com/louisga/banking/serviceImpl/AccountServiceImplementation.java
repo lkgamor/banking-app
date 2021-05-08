@@ -25,12 +25,13 @@ import com.louisga.banking.model.AccountToUIDTO;
 import com.louisga.banking.model.Branch;
 import com.louisga.banking.model.CardType;
 import com.louisga.banking.model.EmailPayload;
+import com.louisga.banking.model.Employee;
 import com.louisga.banking.model.Transaction;
 import com.louisga.banking.repository.AccountRepository;
 import com.louisga.banking.repository.TransactionRepository;
 import com.louisga.banking.service.AccountService;
-import com.louisga.banking.service.BranchService;
 import com.louisga.banking.service.CardService;
+import com.louisga.banking.service.EmployeeService;
 import com.louisga.banking.utility.AppConstants;
 import com.louisga.banking.utility.CentrifugoPublisher;
 
@@ -48,7 +49,7 @@ public class AccountServiceImplementation implements AccountService {
 	private final AccountRepository accountRepository;
 	private final CardService cardService;
 	private final CompanyConfiguration companyConfig;
-	private final BranchService branchService;
+	private final EmployeeService employeeService;
 	private final CentrifugoPublisher centrifugoPublisher;
 	private final TransactionRepository transactionRepository;
 	private final EmailServiceImplementation emailServiceImpl;
@@ -170,10 +171,12 @@ public class AccountServiceImplementation implements AccountService {
 	    CardType card = cardService.getCardDetails(accountDTO.getAccountIDType());
 	    
 	    String accountName = accountDTO.getAccountName();
+	    
+		Employee employee = employeeService.getEmployeeDetails(companyConfig.getDefaultUserId());
 
-		Branch branch = branchService.getBranchDetails("21cfe333-042c-43ad-90bd-851437cdaea0");
+		Branch branch = employee.getBranch();
 		
-	    Account accountToSave = AccountDTO.toEntityFromDTO(companyConfig.getAccountNamesPrefix(), accountDTO, card, branch);
+	    Account accountToSave = AccountDTO.toEntityFromDTO(companyConfig.getAccountNamesPrefix(), accountDTO, employee, card, branch);
 	    
 		try {
 			log.info("{} ==> created account '{}'", AppConstants.ANONYMOUS, accountName);

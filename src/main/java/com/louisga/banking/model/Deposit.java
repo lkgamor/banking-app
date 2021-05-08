@@ -41,6 +41,10 @@ public class Deposit implements Serializable {
 	@JoinColumn(name="deposit_branch", referencedColumnName = "branch_id")
 	private Branch branch;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name= "issued_by", referencedColumnName = "employee_id")
+	private Employee employee;
+	
 	@Column(name= "deposited_account_number")
 	private String depositedAccountNumber;
 

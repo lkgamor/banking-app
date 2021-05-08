@@ -37,9 +37,6 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
 	@Query(value = "SELECT l FROM Loan l WHERE l.loanDate BETWEEN :startDate AND :endDate")
 	Page<Loan> findAllLoansByDate(Pageable pageable, ZonedDateTime startDate, ZonedDateTime endDate);
 	
-	@Query(value = "SELECT l FROM Loan l WHERE l.employee.employeeId = :userId AND l.loanDate BETWEEN :startDate AND :endDate")
-	Page<Loan> findAllLoansByDateForUser(Pageable pageable, String userId, ZonedDateTime startDate, ZonedDateTime endDate);
-
 	@Query(value = "SELECT l FROM Loan l WHERE loanAccountNumber = :accountNumber")
 	ArrayList<Loan> findAllLoansForAccount(String accountNumber);
 
