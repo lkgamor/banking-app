@@ -8,6 +8,7 @@ A sample web application for a savings and loans setup.
 - SpringBoot
 - Thymeleaf
 - Centrifuge.js
+- ApexChart.js
 - Flyway
 - MySQL
 - Docker
