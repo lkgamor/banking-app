@@ -301,7 +301,7 @@ const buildTable = accounts => {
 		const accountContact = account.accountContact || DOMStrings.notAvailable;
 		const accountIDNumber = account.accountIDNumber || DOMStrings.notAvailable;
 		const cardName = account.card.cardTypeName || DOMStrings.notAvailable;
-		const accountOpenedBy = setAccountOpenedBy(account.employee.employeeFirstName + ' ' + account.employee.employeeLastName);
+		const accountOpenedBy = account.employee.employeeFirstName + ' ' + account.employee.employeeLastName;
 		const branchName = account.branch.branchName || DOMStrings.notAvailable;
 		const accountStatus = setAccountStatus(account.accountStatus);
 		const accountOwingStatus = setAccountOwingStatus(accountIsOwing);
@@ -320,7 +320,7 @@ const buildTable = accounts => {
 						</td>
 						<td class="account__idtype" title="${cardName}">${cardName}</td>
 						<td class="account__idnumber" title="${accountIDNumber}">${accountIDNumber}</td>
-						${accountOpenedBy}								
+						<td class="account__issuer" title="${accountOpenedBy}">${accountOpenedBy}</td>						
 						<td class="account__branch" title="${branchName}">${branchName}</td>
 						<td	class="resource__status">
 							${accountStatus}
@@ -463,10 +463,4 @@ const setAccountStatus = status => {
 				<span><i class="fas fa-circle" data-toggle="tooltip" title="Closed"></i></span>
 				<span>Closed</span>
 			</span>`;
-};
-
-const setAccountOpenedBy = employeeName => {
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager))
-		return `<td class="account__issuer" title="${employeeName}">${employeeName}</td>`;
-	return ``;
 };

@@ -26,7 +26,7 @@
 								<th class="t-head">Phone</th>
 								<th class="t-head">ID Type</th>
 								<th class="t-head">ID Number</th>
-								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">Created By</th>
+								<th class="t-head">Created By</th>
 								<th class="t-head">Branch</th>
 								<th class="t-head">Status</th>
 							</tr>
@@ -47,7 +47,7 @@
 								</td>
 								<td class="account__idtype" th:text="${#strings.capitalize(account.content.card.cardTypeName)} ?: 'N/A'" th:title="${#strings.capitalize(account.content.card.cardTypeName)} ?: 'N/A'"></td>
 								<td class="account__idnumber" th:text="${#strings.toUpperCase(account.content.accountIDNumber)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.accountIDNumber)} ?: 'N/A'"></td>
-								<td class="account__issuer" th:text="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}"></td>
+								<td class="account__issuer" th:text="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.toUpperCase(account.content.employee.employeeFirstName)} + ' ' + ${#strings.toUpperCase(account.content.employee.employeeLastName)} ?: 'N/A'"></td>
 								<td class="account__branch" th:text="${#strings.capitalize(account.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(account.content.branch.branchName)} ?: 'N/A'"></td>
 								<td	class="resource__status">
 									<span class="resource__status--state active" th:if="${account.content.accountStatus}">
@@ -97,7 +97,7 @@
 						</ul>
 					</nav>
                	</div>
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal" ></div> 
            </div>                   
        </main>       
     </section>

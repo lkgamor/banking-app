@@ -126,8 +126,7 @@ public class TransactionRestController {
 	  notes = "Provide an id to look up a specific loan taken with this company and update its status to 'paid'.",
 	  response = Double.class)
 	public ResponseEntity<Double> confirmLoanPayment(@PathVariable String loanId, @RequestBody LoanToPay loan) throws Exception {
-		String userId =  "53f93ef0-0763-42a0-b236-6b730a6965a4";
-		return new ResponseEntity<>(transactionService.makeLoanPayment(userId, loanId, loan), HttpStatus.OK);
+		return new ResponseEntity<>(transactionService.makeLoanPayment(loanId, loan), HttpStatus.OK);
 	}
 		
 	/**
@@ -409,8 +408,7 @@ public class TransactionRestController {
 	@ApiOperation(value = "Create an transaction.",
 	  notes = "Provide a payload to make a transaction with this company.",
 	  response = TransactionResponse.class)
-	public ResponseEntity<TransactionResponse> saveTransaction( @RequestBody final TransactionDTO transactionDTO) throws Exception{    	
-		String userId = "53f93ef0-0763-42a0-b236-6b730a6965a4";
-		return new ResponseEntity<>(transactionService.saveTransaction(userId, transactionDTO), HttpStatus.ACCEPTED);
+	public ResponseEntity<TransactionResponse> saveTransaction(@RequestBody final TransactionDTO transactionDTO) throws Exception{    	
+		return new ResponseEntity<>(transactionService.saveTransaction(transactionDTO), HttpStatus.ACCEPTED);
 	}	
 }

@@ -24,7 +24,7 @@
 								<th class="t-head">Account No_</th>
 								<th class="t-head">Account Name</th>
 								<th class="t-head">Amount</th>
-								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" >Issued By</th>
+								<th class="t-head" >Issued By</th>
 								<th class="t-head">Branch</th>
 								<th class="t-head">Date Issued</th>
 							</tr>
@@ -39,7 +39,7 @@
 								</td>
 								<td class="transaction__account-name" th:text="${#strings.capitalize(deposit.content.depositedAccountName)} ?: 'N/A'" th:title="${#strings.capitalize(deposit.content.depositedAccountName)} ?: 'N/A'"></td>						
 								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(deposit.content.depositAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(deposit.content.depositAmount)} ?: 'N/A'"></td>
-								<td class="transaction__issuer" th:text="${#strings.capitalize(deposit.content.employee.employeeFirstName) +' '+ #strings.capitalize(deposit.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(deposit.content.employee.employeeFirstName) +' '+ #strings.capitalize(deposit.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(deposit.content.employee.employeeFirstName) +' '+ #strings.capitalize(deposit.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(deposit.content.employee.employeeFirstName) +' '+ #strings.capitalize(deposit.content.employee.employeeLastName)} ?: 'N/A'" ></td>
 								<td class="transaction__branch" th:text="${#strings.capitalize(deposit.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(deposit.content.branch.branchName)} ?: 'N/A'"></td>
 								<td class="transaction__date" th:text="${#calendars.format(deposit.content.depositDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(deposit.content.depositDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
 							</tr>
@@ -80,7 +80,7 @@
 					    </ul>
 					</nav>            
                	</div>
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal"></div> 
            </div>
        </main>
     </section>

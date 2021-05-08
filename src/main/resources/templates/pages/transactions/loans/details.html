@@ -43,7 +43,7 @@
 											<span>
 												<i class="fas fa-user-tie fa-sm text-dark"></i> Issued by
 											</span>
-											<a class="new-resource__details--value" th:href="@{|/employees/${loanPayment.employee.employeeId}|}" th:text="${#strings.capitalize(loanPayment.employee.employeeFirstName)} + ' ' + ${#strings.capitalize(loanPayment.employee.employeeLastName)}">Employee Name</a>
+											<span class="new-resource__details--value" th:text="${#strings.capitalize(loanPayment.employee.employeeFirstName)} + ' ' + ${#strings.capitalize(loanPayment.employee.employeeLastName)}">Employee Name</span>
 										</span>
 									</div>
 									<div class="new-resource__details-field">
@@ -120,7 +120,7 @@
 						</fieldset>
 					</div>
 				</div>
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal"></div> 
 			</div>
 		</main>
 	</section>

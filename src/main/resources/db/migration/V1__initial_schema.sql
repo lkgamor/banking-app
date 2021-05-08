@@ -5,15 +5,15 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema saveright
+-- Schema banking
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `saveright` DEFAULT CHARACTER SET utf8;
-USE `saveright`;
+CREATE SCHEMA IF NOT EXISTS `banking` DEFAULT CHARACTER SET utf8;
+USE `banking`;
 
 -- -----------------------------------------------------
--- Table `saveright`.`branch`
+-- Table `banking`.`branch`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`branch` (
+CREATE TABLE IF NOT EXISTS `banking`.`branch` (
   `branch_id` VARCHAR(36) NOT NULL,
   `branch_name` VARCHAR(45) NOT NULL,
   `branch_address` VARCHAR(45) NOT NULL,
@@ -26,9 +26,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`card_type`
+-- Table `banking`.`card_type`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`card_type` (
+CREATE TABLE IF NOT EXISTS `banking`.`card_type` (
   `card_type_id` VARCHAR(36) NOT NULL,
   `card_type_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`card_type_id`),
@@ -38,9 +38,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`role`
+-- Table `banking`.`role`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`role` (
+CREATE TABLE IF NOT EXISTS `banking`.`role` (
   `role_id` VARCHAR(36) NOT NULL,
   `role_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`role_id`),
@@ -50,40 +50,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`admin`
+-- Table `banking`.`employee`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`admin` (
-  `admin_id` VARCHAR(36) NOT NULL,
-  `admin_first_name` VARCHAR(100) NOT NULL,
-  `admin_last_name` VARCHAR(100),
-  `admin_contact` VARCHAR(45),
-  `admin_email` VARCHAR(100),
-  `admin_branch` VARCHAR(100) NOT NULL,
-  `admin_role` VARCHAR(36) NOT NULL,
-  `date_created` DATETIME NOT NULL,
-  `working_status` TINYINT(5) NOT NULL,
-  PRIMARY KEY (`admin_id`),
-  UNIQUE INDEX `admin_id_UNIQUE` (`admin_id` ASC),
-  INDEX `branch_id_idx` (`admin_branch` ASC),
-  INDEX `fk_Admin_Role1_idx` (`admin_role` ASC),
-  CONSTRAINT `admin_branch_id`
-    FOREIGN KEY (`admin_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_Admin_Role1`
-    FOREIGN KEY (`admin_role`)
-    REFERENCES `saveright`.`role` (`role_id`)
-    ON DELETE NO ACTION
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `saveright`.`employee`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`employee` (
+CREATE TABLE IF NOT EXISTS `banking`.`employee` (
   `employee_id` VARCHAR(36) NOT NULL,
   `employee_first_name` VARCHAR(100) NOT NULL,
   `employee_last_name` VARCHAR(100),
@@ -103,12 +72,12 @@ CREATE TABLE IF NOT EXISTS `saveright`.`employee` (
   INDEX `fk_Employee_Role1_idx` (`employee_role` ASC),
   CONSTRAINT `employee_branch_id`
     FOREIGN KEY (`employee_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_Employee_Role1`
     FOREIGN KEY (`employee_role`)
-    REFERENCES `saveright`.`role` (`role_id`)
+    REFERENCES `banking`.`role` (`role_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -116,9 +85,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`account`
+-- Table `banking`.`account`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`account` (
+CREATE TABLE IF NOT EXISTS `banking`.`account` (
   `account_number` VARCHAR(50) NOT NULL,
   `account_name` VARCHAR(100) NOT NULL,
   `account_balance` DOUBLE NOT NULL,
@@ -146,17 +115,17 @@ CREATE TABLE IF NOT EXISTS `saveright`.`account` (
   INDEX `fk_account_employee1_idx` (`account_officer` ASC),
   CONSTRAINT `fk_Account_Branch1`
     FOREIGN KEY (`account_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_Account_Card_Type1`
     FOREIGN KEY (`account_id_type`)
-    REFERENCES `saveright`.`card_type` (`card_type_id`)
+    REFERENCES `banking`.`card_type` (`card_type_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_account_employee1`
     FOREIGN KEY (`account_officer`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -164,9 +133,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`account_audit`
+-- Table `banking`.`account_audit`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`account_audit` (
+CREATE TABLE IF NOT EXISTS `banking`.`account_audit` (
   `account_number` VARCHAR(50) NOT NULL,
   `account_name` VARCHAR(45) NOT NULL,
   `account_contact_number` VARCHAR(10) NOT NULL,
@@ -182,12 +151,12 @@ CREATE TABLE IF NOT EXISTS `saveright`.`account_audit` (
   INDEX `fk_account_audit_employee1_idx` (`created_by` ASC),
   CONSTRAINT `fk_Account_Audit_Card_Type1`
     FOREIGN KEY (`account_id_type`)
-    REFERENCES `saveright`.`card_type` (`card_type_id`)
+    REFERENCES `banking`.`card_type` (`card_type_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_account_audit_employee1`
     FOREIGN KEY (`created_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -195,9 +164,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`transaction`
+-- Table `banking`.`transaction`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`transaction` (
+CREATE TABLE IF NOT EXISTS `banking`.`transaction` (
   `id` INT(5) NOT NULL AUTO_INCREMENT,
   `transaction_id` VARCHAR(45) NOT NULL,
   `transaction_type` VARCHAR(45) NOT NULL,
@@ -214,12 +183,12 @@ CREATE TABLE IF NOT EXISTS `saveright`.`transaction` (
   INDEX `fk_transaction_branch1_idx` (`transaction_branch` ASC),
   CONSTRAINT `fk_Transaction_Employee1`
     FOREIGN KEY (`transaction_issued_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_transaction_branch1`
     FOREIGN KEY (`transaction_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -229,9 +198,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`deposit`
+-- Table `banking`.`deposit`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`deposit` (
+CREATE TABLE IF NOT EXISTS `banking`.`deposit` (
   `id` INT(5) NOT NULL AUTO_INCREMENT,
   `deposit_id` VARCHAR(45) NOT NULL,
   `deposit_date` DATETIME NOT NULL,
@@ -248,17 +217,17 @@ CREATE TABLE IF NOT EXISTS `saveright`.`deposit` (
   INDEX `fk_deposit_branch1_idx` (`deposit_branch` ASC),
   CONSTRAINT `fk_Deposit_Transaction1`
     FOREIGN KEY (`deposit_id`)
-    REFERENCES `saveright`.`transaction` (`transaction_id`)
+    REFERENCES `banking`.`transaction` (`transaction_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_deposit_employee1`
     FOREIGN KEY (`issued_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_deposit_branch1`
     FOREIGN KEY (`deposit_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -266,9 +235,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`loan`
+-- Table `banking`.`loan`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`loan` (
+CREATE TABLE IF NOT EXISTS `banking`.`loan` (
   `id` INT(5) NOT NULL AUTO_INCREMENT,
   `loan_id` VARCHAR(45) NOT NULL,
   `loan_date` DATETIME NOT NULL,
@@ -287,17 +256,17 @@ CREATE TABLE IF NOT EXISTS `saveright`.`loan` (
   INDEX `fk_loan_branch1_idx` (`loan_branch` ASC),
   CONSTRAINT `loan_id`
     FOREIGN KEY (`loan_id`)
-    REFERENCES `saveright`.`transaction` (`transaction_id`)
+    REFERENCES `banking`.`transaction` (`transaction_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_loan_employee1`
     FOREIGN KEY (`issued_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_loan_branch1`
     FOREIGN KEY (`loan_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -305,9 +274,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`loan_payment`
+-- Table `banking`.`loan_payment`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`loan_payment` (
+CREATE TABLE IF NOT EXISTS `banking`.`loan_payment` (
   `id` INT(5) NOT NULL AUTO_INCREMENT,
   `loan_id` VARCHAR(45) NOT NULL,
   `loan_payment_amount` DOUBLE NULL DEFAULT NULL,
@@ -321,12 +290,12 @@ CREATE TABLE IF NOT EXISTS `saveright`.`loan_payment` (
   INDEX `loan_id0_idx` (`loan_id` ASC),
   CONSTRAINT `fk_loan_employee10`
     FOREIGN KEY (`loan_payment_issued_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `loan_id0`
     FOREIGN KEY (`loan_id`)
-    REFERENCES `saveright`.`loan` (`loan_id`)
+    REFERENCES `banking`.`loan` (`loan_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -334,9 +303,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`transaction_audit`
+-- Table `banking`.`transaction_audit`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`transaction_audit` (
+CREATE TABLE IF NOT EXISTS `banking`.`transaction_audit` (
   `audit_id` INT(5) NOT NULL AUTO_INCREMENT,
   `transaction_id` VARCHAR(50) NOT NULL,
   `transaction_type` VARCHAR(10) NOT NULL,
@@ -353,9 +322,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `saveright`.`withdrawal`
+-- Table `banking`.`withdrawal`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `saveright`.`withdrawal` (
+CREATE TABLE IF NOT EXISTS `banking`.`withdrawal` (
   `id` INT(5) NOT NULL AUTO_INCREMENT,
   `withdrawal_id` VARCHAR(45) NOT NULL,
   `withdrawal_date` DATETIME NOT NULL,
@@ -372,61 +341,61 @@ CREATE TABLE IF NOT EXISTS `saveright`.`withdrawal` (
   INDEX `fk_withdrawal_branch1_idx` (`withdrawal_branch` ASC),
   CONSTRAINT `fk_Withdrawal_Transaction1`
     FOREIGN KEY (`withdrawal_id`)
-    REFERENCES `saveright`.`transaction` (`transaction_id`)
+    REFERENCES `banking`.`transaction` (`transaction_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_withdrawal_employee1`
     FOREIGN KEY (`issued_by`)
-    REFERENCES `saveright`.`employee` (`employee_id`)
+    REFERENCES `banking`.`employee` (`employee_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE,
   CONSTRAINT `fk_withdrawal_branch1`
     FOREIGN KEY (`withdrawal_branch`)
-    REFERENCES `saveright`.`branch` (`branch_id`)
+    REFERENCES `banking`.`branch` (`branch_id`)
     ON DELETE NO ACTION
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
-USE `saveright`;
+USE `banking`;
 
 DELIMITER $$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Account_BEFORE_UPDATE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Account_BEFORE_UPDATE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Account_BEFORE_UPDATE`
-BEFORE UPDATE ON `saveright`.`account`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Account_BEFORE_UPDATE`
+BEFORE UPDATE ON `banking`.`account`
 FOR EACH ROW
 BEGIN
   INSERT INTO `account_audit` (account_number, account_name, account_contact_number, account_email, account_id_type, account_id_number, account_occupation, created_by, account_balance, date_edited, account_action) VALUES(OLD.`account_number`, OLD.`account_name`, OLD.`account_contact_number`, OLD.`account_email`, OLD.`account_id_type`, OLD.`account_id_number`, OLD.`account_occupation`, OLD.`account_officer`, OLD.`account_balance`, NOW(), "UPDATED");
 END$$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Account_BEFORE_DELETE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Account_BEFORE_DELETE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Account_BEFORE_DELETE`
-BEFORE DELETE ON `saveright`.`account`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Account_BEFORE_DELETE`
+BEFORE DELETE ON `banking`.`account`
 FOR EACH ROW
 BEGIN
   INSERT INTO `account_audit` (account_number, account_name, account_contact_number, account_email, account_id_type, account_id_number, account_occupation, created_by, account_balance, date_edited, account_action) VALUES(OLD.`account_number`, OLD.`account_name`, OLD.`account_contact_number`, OLD.`account_email`, OLD.`account_id_type`, OLD.`account_id_number`, OLD.`account_occupation`, OLD.`account_officer`, OLD.`account_balance`, NOW(), "DELETED");
 END$$
 
 
--- USE `saveright`$$
--- DROP TRIGGER IF EXISTS `saveright`.`Transaction_AFTER_INSERT` $$
--- USE `saveright`$$
+-- USE `banking`$$
+-- DROP TRIGGER IF EXISTS `banking`.`Transaction_AFTER_INSERT` $$
+-- USE `banking`$$
 -- CREATE
--- DEFINER=`saveright`@`%`
--- TRIGGER `saveright`.`Transaction_AFTER_INSERT`
--- AFTER INSERT ON `saveright`.`transaction`
+-- DEFINER=`root`@`localhost`
+-- TRIGGER `banking`.`Transaction_AFTER_INSERT`
+-- AFTER INSERT ON `banking`.`transaction`
 -- FOR EACH ROW
 -- BEGIN
 --   SET @employee = (SELECT concat(employee_first_name, ' ', employee_last_name) FROM employee WHERE employee_id = NEW.`transaction_issued_by`);
@@ -441,13 +410,13 @@ END$$
 -- END$$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Transaction_BEFORE_DELETE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Transaction_BEFORE_DELETE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Transaction_BEFORE_DELETE`
-BEFORE DELETE ON `saveright`.`transaction`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Transaction_BEFORE_DELETE`
+BEFORE DELETE ON `banking`.`transaction`
 FOR EACH ROW
 BEGIN
   SET @employee = (SELECT concat(employee_first_name, ' ', employee_last_name) FROM employee WHERE employee_id = OLD.`transaction_issued_by`);
@@ -455,13 +424,13 @@ BEGIN
 END$$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Deposit_BEFORE_DELETE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Deposit_BEFORE_DELETE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Deposit_BEFORE_DELETE`
-BEFORE DELETE ON `saveright`.`deposit`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Deposit_BEFORE_DELETE`
+BEFORE DELETE ON `banking`.`deposit`
 FOR EACH ROW
 BEGIN
   SET @employee = (SELECT concat(employee_first_name, ' ', employee_last_name) FROM employee WHERE employee_id = OLD.`issued_by`);
@@ -469,13 +438,13 @@ BEGIN
 END$$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Loan_BEFORE_DELETE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Loan_BEFORE_DELETE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Loan_BEFORE_DELETE`
-BEFORE DELETE ON `saveright`.`loan`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Loan_BEFORE_DELETE`
+BEFORE DELETE ON `banking`.`loan`
 FOR EACH ROW
 BEGIN
   SET @employee = (SELECT concat(employee_first_name, ' ', employee_last_name) FROM employee WHERE employee_id = OLD.`issued_by`);
@@ -483,13 +452,13 @@ BEGIN
 END$$
 
 
-USE `saveright`$$
-DROP TRIGGER IF EXISTS `saveright`.`Withdrawal_BEFORE_DELETE` $$
-USE `saveright`$$
+USE `banking`$$
+DROP TRIGGER IF EXISTS `banking`.`Withdrawal_BEFORE_DELETE` $$
+USE `banking`$$
 CREATE
-DEFINER=`saveright`@`%`
-TRIGGER `saveright`.`Withdrawal_BEFORE_DELETE`
-BEFORE DELETE ON `saveright`.`withdrawal`
+DEFINER=`root`@`localhost`
+TRIGGER `banking`.`Withdrawal_BEFORE_DELETE`
+BEFORE DELETE ON `banking`.`withdrawal`
 FOR EACH ROW
 BEGIN
   SET @employee = (SELECT concat(employee_first_name, ' ', employee_last_name) FROM employee WHERE employee_id = OLD.`issued_by`);
@@ -516,6 +485,21 @@ DELIMITER;
 
 CALL AddMainBranchInfo();
 
+/*
+Create Default Role for company in this database.
+*/
+
+-- MySQL procedure
+DELIMITER $$
+CREATE PROCEDURE AddRoleInfo()
+BEGIN
+  # MySQL-style single line comment
+  INSERT INTO role (role_id, role_name) VALUES ('e0ae5d5a-2a72-4d73-8fab-2d0e116e41ff', 'MANAGER');
+END$$
+DELIMITER;
+
+CALL AddRoleInfo();
+
 
 /*
 Create Supported ID Cards for company in this database.
@@ -527,11 +511,27 @@ CREATE PROCEDURE AddSupportedCardsInfo()
 BEGIN
   # MySQL-style single line comment
   INSERT INTO card_type (card_type_id, card_type_name) VALUES ('7149128d-0c18-490e-983a-3c5b5195ce8d', 'VOTERS ID'), 
-                                                              ('f419c3b3-ded0-48a1-85d6-b1b465eb96b5', 'NHIS CARD'),
                                                               ('c7d50091-b433-47b1-9afe-75b652cddfda', 'DRIVERS LICENSE'),
-                                                              ('31217acb-7ae0-4f5d-9cef-deefadd62afb', 'GHANA CARD'),
+                                                              ('31217acb-7ae0-4f5d-9cef-deefadd62afb', 'NATIONAL ID CARD'),
                                                               ('b852fd82-8b60-4e77-9bfb-8d80df77ceda', 'PHONE NUMBER');
 END$$
 DELIMITER;
 
 CALL AddSupportedCardsInfo();
+
+
+/*
+Create Anonymous user for company in this database.
+*/
+
+-- MySQL procedure
+DELIMITER $$
+CREATE PROCEDURE AddAnonymousUserInfo()
+BEGIN
+  # MySQL-style single line comment
+  INSERT INTO employee (employee_id, employee_first_name, employee_last_name, employee_contact, employee_dob, employee_gender, employee_address, employee_email, employee_branch, employee_role, date_created, working_status) 
+  VALUES ('a471e78d-d244-48fd-a08f-9d91e7123040', 'ANONYMOUS', 'USER', '+233542411666', '1970-01-01', 'UNSPECIFIED', 'ASGUARD', 'lkgamor@gmail.com', 'fb515062-4f6b-4977-a41c-80934d79c283', 'e0ae5d5a-2a72-4d73-8fab-2d0e116e41ff', '1970-01-01 00:00:00', true);
+END$$
+DELIMITER;
+
+CALL AddAnonymousUserInfo();

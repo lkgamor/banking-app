@@ -45,6 +45,10 @@ public class Transaction implements Serializable {
 	
 	@Column(name="transaction_account_name")
 	private String transactionAccountName;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="transaction_issued_by", referencedColumnName = "employee_id")
+	private Employee employee;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="transaction_branch", referencedColumnName = "branch_id")

@@ -50,13 +50,13 @@
 			   					}|">
 				<i class="fas fa-coins fa-sm"></i> Transactions
 			</a>
-			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/employees}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/employees') ? 'active' : ''}|">
+			<a class="btn nav-items__link" th:href="@{/employees}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/employees') ? 'active' : ''}|">
 				<i class="fas fa-users fa-sm"></i> Employees
 			</a>
-			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/branches}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/branches') ? 'active' : ''}|">
+			<a class="btn nav-items__link" th:href="@{/branches}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/branches') ? 'active' : ''}|">
 				<i class="fas fa-warehouse fa-sm"></i> Branches
 			</a>
-			<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" class="btn nav-items__link" th:href="@{/cards}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/cards') ? 'active' : ''}|">
+			<a class="btn nav-items__link" th:href="@{/cards}" th:classappend="|${#httpServletRequest.servletPath.startsWith('/cards') ? 'active' : ''}|">
 				<i class="fas fa-address-card fa-sm"></i> Cards
 			</a>
 		</div>
@@ -74,7 +74,7 @@
 				<i class="fas fa-user-circle fa-2x"></i>
 			</div>
 			<div class="user__card-item user__name">
-				<span class="font-italic" th:text="${#strings.capitalize(firstname)}"></span>
+				<span class="font-italic">ANONYMOUS</span>
 			</div>
 			<div class="user__card-item user__dropdown dropdown">
 				<button class="nav-link dropdown-toggle text--lightgray"
@@ -83,19 +83,9 @@
 					<i class="fas fa-angle-down"></i>
 				</button>
 				<div class="dropdown-menu" aria-labelledby="userDropdown">
-					<a class="dropdown-item" th:href="@{/account}" target="_blank">
-						<i class="fas fa-user fa-sm fa-fw"></i> Profile
-					</a> 
-					<a th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}"
-						class="dropdown-item" th:href="@{/audits}"> 
+					<a class="dropdown-item" th:href="@{/audits}"> 
 						<i class="fas fa-list fa-sm fa-fw"></i> Activity Log
-					</a> 
-					<a class="dropdown-item">
-						<i class="fas fa-warehouse fa-sm fa-fw"></i> Branch Info
-					</a>
-					<a class="dropdown-item" th:href="@{/logout}"> 
-						<i class="fas fa-sign-out-alt fa-sm fa-fw"></i> Logout
-					</a>
+					</a> 	
 				</div>
 			</div>
 		</div>
@@ -104,15 +94,6 @@
 	
 	<div class="neo__outset filter" th:fragment="tables-filter(showEmplyeesFilter)">
 		<input class="custom-input form-control" id="filter-date" name="form-control" type="date" placeholder="Filter by period created...">
-		<select class="new-transaction__account-dropdown form-control" id="filter-issuer" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')} AND ${showEmplyeesFilter}">
-			<option selected value="">Filter by employee...</option>
-			<option value="">ALL</option>
-			<option th:each="employee: ${employees}" 
-					th:value="${employee.employeeId}" 
-					th:text="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}" 
-					th:data-name="${#strings.capitalize(employee.employeeFirstName)} + ' ' + ${#strings.capitalize(employee.employeeLastName)}">
-			</option>   
-		</select>
 		<select class="new-transaction__account-dropdown form-control" id="filter-size">
 			<option value="">Row size</option>
 			<option value="5">5</option>
@@ -181,7 +162,7 @@
 
 		</script>		
 		
-		<script type="text/javascript" th:inline="javascript" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">		
+		<script type="text/javascript" th:inline="javascript">		
 			const ACCOUNTS_CHANNEL = /*[[${accountChannel}]]*/ 'default';
 			const TRANSACTIONS_CHANNEL = /*[[${transactionChannel}]]*/ 'default';
 			const CENTRIFUGO_WEBSOCKET = /*[[${centrifugoWebSocket}]]*/ 'default';

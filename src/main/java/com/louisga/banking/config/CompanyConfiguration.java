@@ -19,4 +19,5 @@ public class CompanyConfiguration {
 	private Double initialAccountBalance;
 	private Boolean sendEmails;
 	private String adminContact;
+	private String defaultUserId;
 }

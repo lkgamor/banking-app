@@ -297,7 +297,7 @@ const buildTable = withdrawals => {
 		const withdrawalAccountName = withdrawal.withdrawalAccountName || DOMStrings.notAvailable;
 		const withdrawalAccountNumber = withdrawal.withdrawalAccountNumber || DOMStrings.notAvailable;
 		const withdrawalAmount = withdrawal.withdrawalAmount.toFixed(1) || DOMStrings.notAvailable;
-		const withdrawalIssuedBy = setTransactionIssuedBy(withdrawal.employee.employeeFirstName + ' ' + withdrawal.employee.employeeLastName);
+		const withdrawalIssuedBy = withdrawal.employee.employeeFirstName + ' ' + withdrawal.employee.employeeLastName;
 		const branchName = withdrawal.branch.branchName || DOMStrings.notAvailable;
 		const withdrawalDate = new Date(withdrawal.withdrawalDate).toGMTString() || DOMStrings.notAvailable;
 
@@ -310,7 +310,7 @@ const buildTable = withdrawals => {
 						</td>
 						<td class="transaction__account-name" title="${withdrawalAccountName}">${withdrawalAccountName}</td>								
 						<td class="transaction__amount ghana-cedi-symbol" title="GH₵ ${withdrawalAmount}">${withdrawalAmount}</td>
-						${withdrawalIssuedBy}
+						<td class="transaction__issuer" title="${withdrawalIssuedBy}">${withdrawalIssuedBy}</td>
 						<td class="transaction__branch" title="${branchName}">${branchName}</td>
 						<td class="transaction__date" title="${withdrawalDate}">${withdrawalDate}</td>
 					</tr>`;
@@ -422,11 +422,4 @@ const buildLinkUrl = url => {
 	}
 	
 	return link.split(',')[0];
-};
-
-
-const setTransactionIssuedBy = employeeName => {
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager))
-		return `<td class="transaction__issuer" title="${employeeName}">${employeeName}</td>`;
-	return ``;
 };

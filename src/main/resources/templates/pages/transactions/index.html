@@ -24,7 +24,7 @@
 								<th class="t-head">Account Name</th>
 								<th class="t-head">Type</th>
 								<th class="t-head">Amount</th>
-								<th class="t-head" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}">Issued By</th>
+								<th class="t-head">Issued By</th>
 								<th class="t-head">Branch</th>
 								<th class="t-head">Date Issued</th>
 							</tr>
@@ -41,7 +41,7 @@
 									<a th:href="@{|/${#strings.toLowerCase(transaction.content.transactionType) + 's'}|}" th:text="${transaction.content.transactionType} ?: 'N/A'" th:title="${transaction.content.transactionType} ?: 'N/A'"></a>
 								</td>									
 								<td class="transaction__amount ghana-cedi-symbol" th:text="${#strings.capitalize(transaction.content.transactionAmount)} ?: 'N/A'" th:title="'GH₵ ' + ${#strings.capitalize(transaction.content.transactionAmount)} ?: 'N/A'"></td>
-								<td class="transaction__issuer" th:text="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></td>
+								<td class="transaction__issuer" th:text="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.employee.employeeFirstName) +' '+ #strings.capitalize(transaction.content.employee.employeeLastName)} ?: 'N/A'" ></td>
 								<td class="transaction__branch" th:text="${#strings.capitalize(transaction.content.branch.branchName)} ?: 'N/A'" th:title="${#strings.capitalize(transaction.content.branch.branchName)} ?: 'N/A'"></td>
 								<td class="transaction__date" th:text="${#calendars.format(transaction.content.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}" th:title="${#calendars.format(transaction.content.transactionDate,'EEE, d MMM yyyy HH:mm:ss')}"></td>
 							</tr>
@@ -54,24 +54,6 @@
 					</div>
 					
 					<nav class="pagination-nav" aria-label="" th:if="${transactions.metadata.totalElements}">
-						<!-- <ul class="pagination" th:with="total = ${transaction.metadata.totalPages}">
-							<li th:if="${previous}" class="page-item">
-								<a class="page-link" th:href="@{/transactions(page=${transaction.metadata.number - 1})}"aria-label="Previous"> 
-									<span aria-hidden="true">&laquo;</span>
-								</a>
-							</li>
-							<li th:each="page : ${#numbers.sequence(0, total - 1)}"	class="page-item"
-								th:classappend="${page} == ${transaction.metadata.number} ? 'active' : ''">
-								<a class="page-link" th:href="@{/transactions(page=${page})}" th:text="${page + 1}">
-									<span class="sr-only">(current)</span>1
-								</a>
-							</li>
-							<li th:if="${next}" class="page-item">
-								<a class="page-link" th:href="@{/transactions(page=${transaction.metadata.number + 1})}" aria-label="Next"> 
-									<span aria-hidden="true">&raquo;</span>
-								</a>
-							</li>
-						</ul> -->
 						<ul class="pagination">
 					        <li th:class="${transactions.metadata.number == 0} ? 'disabled' : ''">
 					            <a th:if="${transactions.metadata.number == 0}" href="javascript:void(0);">Previous</a>
@@ -100,7 +82,7 @@
 					    </ul>
 					</nav>
                	</div>
-				<div th:replace="fragments/common :: notification-modal" th:if="${#request.isUserInRole('ADMIN')} OR ${#request.isUserInRole('MANAGER')}" ></div> 
+				<div th:replace="fragments/common :: notification-modal" ></div> 
            </div>
        </main>
     </section>

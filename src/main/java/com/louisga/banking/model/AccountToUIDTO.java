@@ -49,6 +49,8 @@ public class AccountToUIDTO {
 	private CardType card;
 
 	private Branch branch;
+
+	private Employee employee;
 	
 	private ArrayList<Transaction> transactions;
 	

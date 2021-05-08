@@ -173,7 +173,7 @@ import {DOMStrings, DOMClasses, DOMIds, DOMElements, DOMEndpoints, DOMEvents} fr
 				if(recentTransactions.totalElements > 0) {
 					const recentTransactionsContainer = document.querySelector('.recent-transactions__content');
 					recentTransactions.content.forEach(transaction => {
-						const {totalBalance, transactionAccountName, transactionAccountNumber, transactionAmount, transactionDate, transactionType, transactionId} = transaction;			
+						const {transactionAmount, transactionDate, transactionType, transactionId} = transaction;			
 						const recentTransactionCard = `<a href="${CONTEXT}${transactionType.toLowerCase()}s/${transactionId}" title="View Transaction" class="recent-transactions__card">
 							                                <span class="recent-transactions__type ${transactionType.toLowerCase()}"></span>
 							                                <div class="recent-transactions__details">
@@ -204,7 +204,7 @@ import {DOMStrings, DOMClasses, DOMIds, DOMElements, DOMEndpoints, DOMEvents} fr
 	};
 	
 	loadAllAccounts();
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager)) loadAllEmployees();
+	loadAllEmployees();
 	loadRecentTransactions();
 	loadDataForGraph('all');	
 })();

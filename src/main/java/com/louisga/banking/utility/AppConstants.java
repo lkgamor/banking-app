@@ -11,7 +11,7 @@ public interface AppConstants {
 	final static String EMAIL_SENT_FAILURE_REASON_LOG = "REASON ==>> {} ";
 	
 	static final String ADMINISTRATOR = "Admin";
-	static final String ANONYMOUS = "ANONYMOUS";
+	static final String ANONYMOUS = "ANONYMOUS USER";
 	static final String BRANCH_MANAGER = "Manager";
 	static final String BRANCH_OFFICER = "Officer";
 	static final String BRANCH_TELLER = "Teller";

@@ -298,7 +298,7 @@ const buildTable = transactions => {
 		const transactionAccountNumber = transaction.transactionAccountNumber || DOMStrings.notAvailable;
 		const transactionType = transaction.transactionType || DOMStrings.notAvailable;
 		const transactionAmount = transaction.transactionAmount.toFixed(1) || DOMStrings.notAvailable;
-		const transactionIssuedBy = setTransactionIssuedBy(transaction.employee.employeeFirstName + ' ' + transaction.employee.employeeLastName);		
+		const transactionIssuedBy = transaction.employee.employeeFirstName + ' ' + transaction.employee.employeeLastName;		
 		const branchName = transaction.branch.branchName || DOMStrings.notAvailable;
 		const transactionDate = new Date(transaction.transactionDate).toGMTString() || DOMStrings.notAvailable;
 
@@ -313,7 +313,7 @@ const buildTable = transactions => {
 							<a href="${CONTEXT}${transactionType.toLowerCase()}s" title="${transactionType}">${transactionType}</a>
 						</td>									
 						<td class="transaction__amount ghana-cedi-symbol" title="GH₵ ${transactionAmount}">${transactionAmount}</td>
-						${transactionIssuedBy}
+						<td class="transaction__issuer" title="${transactionIssuedBy}">${transactionIssuedBy}</td>
 						<td class="transaction__branch" title="${branchName}">${branchName}</td>
 						<td class="transaction__date" title="${transactionDate}">${transactionDate}</td>
 					</tr>`;
@@ -425,11 +425,4 @@ const buildLinkUrl = url => {
 	}
 	
 	return link.split(',')[0];
-};
-
-
-const setTransactionIssuedBy = employeeName => {
-	if (USER_ROLE.toLowerCase().includes(DOMStrings.roleManager))
-		return `<td class="transaction__issuer" title="${employeeName}">${employeeName}</td>`;
-	return ``;
 };

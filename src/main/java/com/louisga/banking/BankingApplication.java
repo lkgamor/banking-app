@@ -23,10 +23,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @SpringBootApplication
 @RequiredArgsConstructor
-public class SaverightApplication {
+public class BankingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SaverightApplication.class, args);
+		SpringApplication.run(BankingApplication.class, args);
 	}
 
 	@Bean
