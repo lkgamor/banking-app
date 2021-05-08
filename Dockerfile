@@ -22,14 +22,14 @@ ENV email=lkgamor@gmail.com
 LABEL maintainer=${email}
 
 #Set project deployment directory
-WORKDIR /saveright
+WORKDIR /banking
 
 #Copy all required files and folders to working directory
 COPY ./src ./src
 
 #Copy over built artifacts from maven-dependencies
-COPY --from=maven-dependencies target/saveright.jar ./target/saveright.jar
+COPY --from=maven-dependencies target/saveright.jar ./target/banking.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "./target/saveright.jar"]
+ENTRYPOINT ["java", "-jar", "./target/banking.jar"]
